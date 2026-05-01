@@ -1,0 +1,19 @@
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  /* background-color: #e3dfd4; */
+}
+
+app-root {
+  display: block;
+  min-height: 100vh;
+}
+
+body {
+  margin: 0;
+  font-family: 'Inter', sans-serif;
+  /* background-color: #E5E0D8; */
+  color: #725C3A;
+  background-image: linear-gradient(to bottom right, #fcf7f0, #E5E0D8);
+}

@@ -1,0 +1,83 @@
+<header class="header">
+  <div class="logo-bar">
+    <img class="logo" src="/pictures/logo-beige.png">
+    BePrepared
+  </div>
+  <div class="header-right">
+    <button routerLink="/events" class="header-btns">All Events</button>
+    <button routerLink="/myevents" class="header-btns">My Events</button>
+    <button routerLink="/badges" class="header-btns">Badges</button>
+    <button routerLink="/statistics" class="header-btns">Statistics</button>
+    <button routerLink="/editprofile" class="header-btns">Profile</button>
+  </div>
+</header>
+
+<main class="main-container">
+  <p routerLink="/events" class="navigate-back"><- Back</p>
+
+      <div class="container">
+        <h2>Create New Event</h2>
+        <p class="subtitle">
+          Fill in the details for your scout event. All fields marked with * are required.
+        </p>
+
+        <form (ngSubmit)="submit()">
+
+          <div class="form-group">
+            <label>Event Name *</label>
+            <input name="name" [(ngModel)]="event.name" type="text" placeholder="Enter event name" required />
+          </div>
+
+          <div class="form-group">
+            <label>Description *</label>
+            <textarea name="description" [(ngModel)]="event.description" rows="4"
+              placeholder="Enter description"></textarea>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label>Start Date *</label>
+              <input [(ngModel)]="event.startDate" name="startDate" type="date" />
+            </div>
+
+            <div class="form-group">
+              <label>End Date *</label>
+              <input [(ngModel)]="event.endDate" name="endDate" type="date" />
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label>Price</label>
+              <input name="price" [(ngModel)]="event.price" type="number" placeholder="$" required />
+            </div>
+
+            <div class="form-group">
+              <label>Registration Deadline *</label>
+              <input [(ngModel)]="event.registrationDeadline" name="registrationDeadline" type="date" />
+            </div>
+          </div>
+
+
+          <div class="form-group">
+            <label>Location *</label>
+            <input name="location" [(ngModel)]="event.location" type="text" placeholder="Enter location" required />
+          </div>
+
+          <div class="form-group">
+            <label>Required Equipment</label>
+            <input [(ngModel)]="event.equipment" name="equipment" type="text"
+              placeholder="e.g. Tent, Boots, Backpack" />
+          </div>
+
+          @if (errorMessage) {
+          <p class="error-msg" style="color: red; margin-bottom: 10px;">{{ errorMessage }}</p>
+          }
+
+          <button type="submit" class="submit-btn">
+            Create Event
+          </button>
+
+        </form>
+      </div>
+</main>

@@ -1,0 +1,87 @@
+<header class="header">
+  <div class="logo-bar">
+    <img class="logo" src="/pictures/logo-beige.png">
+    BePrepared
+  </div>
+  <div class="header-right">
+    <button routerLink="/events" class="current-btn">All Events</button>
+    <button routerLink="/myevents" class="header-btns">My Events</button>
+    <button routerLink="/badges" class="header-btns">Badges</button>
+    <button routerLink="/statistics" class="header-btns">Statistics</button>
+    <button routerLink="/editprofile" class="header-btns">Profile</button>
+  </div>
+</header>
+
+<section class="toolbar">
+  <input type="text" placeholder="Search events..." />
+
+  <select [(ngModel)]="filterStatus" (ngModelChange)="onFilterChange()">
+    <option value="all">All Events</option>
+    <option value="attending">Attending</option>
+    <option value="notAttending">Not attending</option>
+  </select>
+
+  <select [(ngModel)]="filterLocation" (ngModelChange)="onFilterChange()">
+    <option value="">All Locations</option>
+    <option *ngFor="let loc of allLocations" [value]="loc">{{ loc }}</option>
+  </select>
+
+  <select name="filter-price" [(ngModel)]="filterPrice" (ngModelChange)="onFilterChange()">
+    <option value="all">All Prices</option>
+    <option value="free">Free</option>
+  </select>
+
+  <button routerLink="/create" class="create-btn">
+    + Create Event
+  </button>
+</section>
+
+<main id="main" class="grid">
+  <div class="card" *ngFor="let event of paginatedEvents" [routerLink]="['/events', event.id]"
+    [class.active]="isAttending(event)">
+    <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+      <h3>{{ event.name }}</h3>
+      @if (isAttending(event)) {
+      <span
+        style="background: #6C9053; color: white; padding: 5px 8px; border-bottom-left-radius: 10px; border-top-right-radius: 4px; font-size: 11px; font-weight: bold; position: absolute; top: 0; right: 0;">Attending</span>
+      }
+    </div>
+    <p>{{ event.description || 'Learn essential camping skills.' }}</p>
+
+    <div class="meta">
+      <div class="detail">
+        <span class="material-symbols-outlined icon">
+          calendar_month
+        </span>
+        <span> {{ event.startDate }}</span>
+      </div>
+      <div class="detail">
+        <span class="material-symbols-outlined icon">
+          location_on
+        </span>
+        <span> {{ event.location }}</span>
+      </div>
+      <div class="detail">
+        <span class="material-symbols-outlined icon">
+          attach_money
+        </span>
+        <span> {{ event.price }}</span>
+      </div>
+    </div>
+  </div>
+</main>
+
+<div *ngIf="lastViewedEvent" style="padding: 1rem 5%; margin-bottom: -1rem;">
+  <h3 style="color: #6C9053; margin-bottom: 5px; font-size: 16px;">Last Viewed Event</h3>
+  <a [routerLink]="['/events', lastViewedEvent.id]"
+    style="color: inherit; text-decoration: none; display: flex; align-items: center; gap: 10px; background: white; padding: 10px 15px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); width: max-content; font-size: 14px; font-weight: 500;">
+    <span class="material-symbols-outlined icon" style="font-size: 18px; color: #6C9053;">visibility</span>
+    <span>{{ lastViewedEvent.name }} - {{ lastViewedEvent.location }}</span>
+  </a>
+</div>
+
+<div class="pagination">
+  <button (click)="changePage(pageNumber - 1)" [disabled]="pageNumber === 1">Prev</button>
+  <span>{{ pageNumber }}</span>
+  <button name="next" (click)="changePage(pageNumber + 1)" [disabled]="pageNumber * pageSize >= eventsCount">Next</button>
+</div>

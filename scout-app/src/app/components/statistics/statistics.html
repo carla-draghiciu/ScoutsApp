@@ -1,0 +1,70 @@
+<header class="header">
+  <div class="logo-bar">
+    <img class="logo" src="/pictures/logo-beige.png" alt="BePrepared logo">
+    BePrepared
+  </div>
+  <div class="header-right">
+    <button routerLink="/events" class="header-btns">All Events</button>
+    <button routerLink="/myevents" class="header-btns">My Events</button>
+    <button routerLink="/badges" class="header-btns">Badges</button>
+    <button routerLink="/statistics" class="current-btn">Statistics</button>
+    <button routerLink="/editprofile" class="header-btns">Profile</button>
+  </div>
+</header>
+
+<div class="container">
+
+      <div class="stats">
+        <div class="stat-card green">
+          <p class="stat-title">Total Events</p>
+          <div class="bottom-stat">
+            <p class="number">{{ totalEvents }}</p>
+            <span class="material-symbols-outlined icon">arrow_outward</span>
+          </div>
+        </div>
+
+        <div class="stat-card beige">
+          <p class="stat-title">Total Attendees</p>
+          <div class="bottom-stat">
+            <p class="number">{{ totalAttendees }}</p>
+            <span class="material-symbols-outlined icon">group</span>
+          </div>
+        </div>
+
+        <div class="stat-card brown">
+          <p class="stat-title">Avg. Attendees</p>
+          <div class="bottom-stat">
+            <p class="number">{{ avgAttendees }}</p>
+            <span class="material-symbols-outlined icon">groups</span>
+          </div>
+        </div>
+
+        <div class="stat-card green">
+          <p class="stat-title">Total Revenue</p>
+          <div class="bottom-stat">
+            <p class="number">${{ totalRevenue }}</p>
+            <span class="material-symbols-outlined icon">attach_money</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="charts">
+        <div class="chart-card" (click)="toggleChart(1)">
+          <h3>Event Attendance</h3>
+          <p class="chart-desc">Number of scouts attending each event</p>
+          <canvas id="chart1"></canvas>
+        </div>
+
+        <div class="chart-card" (click)="toggleChart(2)">
+          <h3>Price Distribution</h3>
+          <p class="chart-desc">Events categorized by price range</p>
+          <canvas id="chart2"></canvas>
+        </div>
+
+        <div class="chart-card" (click)="toggleChart(3)">
+          <h3>Event Attendance</h3>
+          <p class="chart-desc">Number of scouts attending each level</p>
+          <canvas id="chart3"></canvas>
+        </div>
+      </div>
+</div>

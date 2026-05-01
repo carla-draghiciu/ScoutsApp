@@ -1,0 +1,57 @@
+<header class="header">
+  <div class="logo-bar">
+    <img class="logo" src="/pictures/logo-beige.png" alt="BePrepared logo">
+    BePrepared
+  </div>
+  <div class="header-right">
+    <button routerLink="/events" class="header-btns">All Events</button>
+    <button routerLink="/myevents" class="current-btn">My Events</button>
+    <button routerLink="/badges" class="header-btns">Badges</button>
+    <button routerLink="/statistics" class="header-btns">Statistics</button>
+    <button routerLink="/editprofile" class="header-btns">Profile</button>
+  </div>
+</header>
+
+
+<main class="main">
+      @if (events.length === 0) {
+      <p class="empty">
+        No events yet. Create an event and it will show up here.
+      </p>
+      }
+
+      <div class="grid">
+        <div class="card" *ngFor="let event of paginatedEvents" [routerLink]="['/myevents', event.id]"
+          [class.active]="isAttending(event)">
+          <div class="card-header">
+            <h3>{{ event.name }}</h3>
+            @if (isAttending(event)) {
+            <span class="attending-badge">Attending</span>
+            }
+          </div>
+
+          <p>{{ event.description || 'No description.' }}</p>
+
+          <div class="meta">
+            <div class="detail">
+              <span class="material-symbols-outlined icon">calendar_month</span>
+              <span>{{ event.startDate }}</span>
+            </div>
+            <div class="detail">
+              <span class="material-symbols-outlined icon">location_on</span>
+              <span>{{ event.location }}</span>
+            </div>
+            <div class="detail">
+              <span class="material-symbols-outlined icon">attach_money</span>
+              <span>{{ event.price }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+</main>
+
+<div class="pagination" *ngIf="events.length > pageSize">
+  <button (click)="page = page - 1" [disabled]="page === 1">Prev</button>
+  <span>{{ page }}</span>
+  <button (click)="page = page + 1" [disabled]="page * pageSize >= events.length">Next</button>
+</div>

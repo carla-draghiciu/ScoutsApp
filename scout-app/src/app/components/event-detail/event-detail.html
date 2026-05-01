@@ -1,0 +1,146 @@
+<header class="header">
+  <div class="logo-bar">
+    <img class="logo" src="/pictures/logo-beige.png">
+    BePrepared
+  </div>
+    <div class="header-right">
+    <button routerLink="/events" class="header-btns">All Events</button>
+    <button routerLink="/myevents" class="header-btns">My Events</button>
+    <button routerLink="/badges" class="header-btns">Badges</button>
+    <button routerLink="/statistics" class="header-btns">Statistics</button>
+    <button routerLink="/editprofile" class="header-btns">Profile</button>
+  </div>
+</header>
+
+<main class="main-container">
+
+  <p routerLink="/events" class="navigate-back"><- Back</p>
+
+      <div class="card">
+
+        <div class="card-header">
+          <div class="card-header-top">
+            <h1 class="event-title">{{ event?.name }}</h1>
+            @if (isAttending()) {
+            <span class="attending-badge">
+              Attending
+            </span>
+            }
+          </div>
+          <p class="event-desc">{{ event?.description }}</p>
+        </div>
+
+        <div class="card-body">
+
+          <div class="card-col">
+            <div class="section-title">
+              Event Information
+            </div>
+            <div class="info-rows">
+              <div class="info-row">
+                <div class="info-row-icon">
+                  <span class="material-symbols-outlined icon">
+                    calendar_month
+                  </span>
+                </div>
+                <div class="info-row-text">
+                  <div class="info-row-label">Event Date</div>
+                  <div class="info-row-value">{{ event?.startDate }} - {{ event?.endDate }}</div>
+                </div>
+              </div>
+              <div class="info-row">
+                <div class="info-row-icon">
+                  <span class="material-symbols-outlined icon">
+                    location_on
+                  </span>
+                </div>
+                <div class="info-row-text">
+                  <div class="info-row-label">Location</div>
+                  <div class="info-row-value">{{ event?.location }}</div>
+                </div>
+              </div>
+              <div class="info-row">
+                <div class="info-row-icon">
+                  <span class="material-symbols-outlined icon">
+                    schedule
+                  </span>
+                </div>
+                <div class="info-row-text">
+                  <div class="info-row-label">Registration Deadline</div>
+                  <div class="info-row-value">{{ event?.registrationDeadline }}</div>
+                </div>
+              </div>
+              <div class="info-row">
+                <div class="info-row-icon">
+                  <span class="material-symbols-outlined icon">
+                    attach_money
+                  </span>
+                </div>
+                <div class="info-row-text">
+                  <div class="info-row-label">Price</div>
+                  <div class="info-row-value">{{ event?.price }}</div>
+                </div>
+              </div>
+              <div class="info-row">
+                <div class="info-row-icon">
+                  <span class="material-symbols-outlined icon">
+                    person
+                  </span>
+                </div>
+                <div class="info-row-text">
+                  <div class="info-row-label">Organized by</div>
+                  <div class="info-row-value">Scout #{{ event?.creatorId }}</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+
+          <div class="card-col">
+            <div class="section-title">
+              <span class="material-symbols-outlined icon">
+                backpack
+              </span>
+              Required Equipment
+            </div>
+            <div class="equip-box">
+              <ul class="equip-list">
+                <li>{{ event?.equipment }}</li>
+              </ul>
+            </div>
+
+            <div class="attendance-section">
+              <div class="section-title">
+                <span class="material-symbols-outlined">
+                  group
+                </span>
+                Attendance
+              </div>
+              <div class="attendance-box">
+                <div class="attendance-count">{{ event?.attendees?.length || 0 }}</div>
+                <div class="attendance-label">scout(s) confirmed</div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+
+        <div class="card-footer" style="display: flex; justify-content: space-between; align-items: center;">
+          <label
+            style="display: flex; align-items: center; gap: 10px; cursor: pointer; color: #725C3A; font-weight: bold;">
+            <input type="checkbox" [checked]="isAttending()" (change)="toggleAttendance()"
+              style="width: 18px; height: 18px;" />
+            Attend this event
+          </label>
+
+          @if (isAttending()) {
+          <div class="footer-text" style="color: #6C9053;">
+            <strong>✓ You are attending</strong>
+          </div>
+          }
+        </div>
+
+      </div>
+
+</main>
