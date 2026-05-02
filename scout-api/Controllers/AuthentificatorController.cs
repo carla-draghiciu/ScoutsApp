@@ -28,6 +28,19 @@ namespace scout_api.Controllers
             return Ok(userService.GetAllLoggedIn());
         }
 
+        [HttpGet("{userId}")]
+        public IActionResult GetById(int userId)
+        {
+            var foundUser = userService.GetUserById(userId);
+
+            if (foundUser == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(foundUser);
+        }
+
         [HttpPost("register")]
         public IActionResult Register(RegisterDTO registeringUser)
         {
