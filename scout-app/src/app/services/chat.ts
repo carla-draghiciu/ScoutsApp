@@ -37,4 +37,11 @@ export class ChatService {
     return this.hub.start();
   }
 
+  joinRoom(roomId: string) {
+    return this.hub.invoke('JoinRoom', roomId);
+  }
+
+  leaveRoom(roomId: string) {
+    return this.hub.invoke('LeaveRoom', roomId);
+  }
 }
