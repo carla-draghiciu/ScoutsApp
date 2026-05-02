@@ -28,6 +28,8 @@ export class Login {
     this.authService.login(loggingUser).subscribe({
       next: (response: any) => {
         localStorage.setItem('token', response.token);
+        localStorage.setItem('userName', response.name);
+        localStorage.setItem('userEmail', response.email);
         localStorage.setItem('userId', response.userId);
         this.router.navigate(['/events']);
       },
