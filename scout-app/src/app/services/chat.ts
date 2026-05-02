@@ -1,4 +1,6 @@
 import { Injectable } from '@angular/core';
+import * as signalR from '@microsoft/signalr';
+import { Subject } from 'rxjs';
 
 export interface ChatMessage {
   id: number;
@@ -12,4 +14,16 @@ export interface ChatMessage {
 @Injectable({
   providedIn: 'root',
 })
-export class Chat {}
+export class ChatService {
+  private hub!: signalR.HubConnection;
+
+  messageReceived$ = new Subject<ChatMessage>();
+  historyLoaded$ = new Subject<ChatMessage[]>();
+  
+  constructor() {
+    this.hub = new signalR.HubConnectionBuilder()
+      .withUrl('https://localhost:500/hubs/chat')
+      .withAutomaticReconnect()
+      .build();
+  }
+}
