@@ -4,6 +4,7 @@ import { EventModel, EventService } from '../../services/event';
 import { CookieService } from '../../services/cookie.service';
 import { OnInit } from '@angular/core';
 import { ChangeDetectorRef } from '@angular/core';
+import { AuthService, UserProfile } from '../../services/auth';
 
 @Component({
   selector: 'app-event-detail',
@@ -14,12 +15,15 @@ import { ChangeDetectorRef } from '@angular/core';
 export class EventDetail implements OnInit {
   event: EventModel | undefined;
   userId = Number(localStorage.getItem('userId'));
+  creatorProfile: UserProfile | undefined;
 
   constructor(
     private route: ActivatedRoute, 
     private service: EventService, 
     private cookie: CookieService,
-    private cdr: ChangeDetectorRef) { }
+    private cdr: ChangeDetectorRef,
+    private userService: AuthService
+  ) { }
 
   ngOnInit() {
     const idParam = this.route.snapshot.paramMap.get('id');
@@ -35,6 +39,10 @@ export class EventDetail implements OnInit {
         this.cookie.set('lastViewedEventId', this.event.id.toString());
       }
 
+      this.userService.getUserById(this.event?.creatorId || NaN).subscribe(profile => {
+        this.creatorProfile = profile;
+        this.cdr.detectChanges();
+      });
     });
   }
 
