@@ -11,6 +11,7 @@ import { Statistics } from './components/statistics/statistics';
 import { EditEvent } from './components/edit-event/edit-event';
 import { MyEvents } from './components/my-events/my-events';
 import { EditProfile } from './components/edit-profile/edit-profile';
+import { Chat } from './components/chat/chat';
 
 // export const routes: Routes = [];
 export const routes: Routes = [
@@ -26,5 +27,6 @@ export const routes: Routes = [
   { path: 'myevents/:id', component: EditEvent },
   { path: 'create', component: CreateEventForm },
   { path: 'edit/:id', component: CreateEventForm },
-  { path: 'editprofile', component: EditProfile }
+  { path: 'editprofile', component: EditProfile },
+  { path: 'chat', component: Chat },
 ];
