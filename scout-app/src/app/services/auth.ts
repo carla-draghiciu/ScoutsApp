@@ -16,6 +16,14 @@ export interface LoggingUser {
   password: string;
 }
 
+export interface UserProfile {
+  id: number;
+  name: string;
+  email: string;
+  dateOfBirth: string;
+  scoutLevel: string;
+}
+
 @Injectable({
   providedIn: 'root',
 })
@@ -38,5 +46,9 @@ export class AuthService {
       { 
         headers: { 'Authorization': `Bearer ${token}` } 
       })
+  }
+
+  getUserById(id: number): Observable<UserProfile | undefined> {
+    return this.http.get<UserProfile | undefined>(`${this.apiUrl}/${id}`);
   }
 }
