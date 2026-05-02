@@ -83,9 +83,14 @@ namespace scout_api.Services
             return BCrypt.Net.BCrypt.Verify(enteredPassword, accountPassword);
         }
 
-        public (User user, string token)? Login(LoginDTO logingUser)
+        public (User user, string token, string role, List<string> permissions)? Login(LoginDTO logingUser)
         {
-            User? user = FindUserByEmail(logingUser.Email);
+            //User? user = FindUserByEmail(logingUser.Email);
+            User? user = _context.Users
+                .Include(u => u.Role)
+                    .ThenInclude(r => r.RolePermissions)
+                        .ThenInclude(rp => rp.Permission)
+                .FirstOrDefault(u => u.Email == logingUser.Email);
             if (user == null)
             {
                 return null;
@@ -99,7 +104,11 @@ namespace scout_api.Services
             var token = Guid.NewGuid().ToString();
             this.sessionService.Sessions[token] = user;
 
-            return (user, token);
+            var permissions = user.Role.RolePermissions
+                .Select(rp => rp.Permission.Name)
+                .ToList();
+
+            return (user, token, user.Role.Name, permissions);
         }
 
         public void Logout(string token)

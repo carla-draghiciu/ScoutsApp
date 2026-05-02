@@ -73,14 +73,16 @@ namespace scout_api.Controllers
             {
                 return Unauthorized("Incorrect email or password");
             }
-            var (user, token) = loggedIn.Value;
+            var (user, token, role, permissions) = loggedIn.Value;
 
             return Ok(new
             {
                 UserId = user.Id,
                 Name = user.Name,
                 Email = user.Email,
-                Token = token
+                Token = token,
+                Role = role,
+                Permissions = permissions
             });
         }
 
