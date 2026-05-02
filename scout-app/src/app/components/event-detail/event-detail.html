@@ -92,7 +92,7 @@
                     <div class="info-row-label">Organized by</div>
                     <div class="info-row-value">{{ creatorProfile?.name }}</div>
                   </div>
-                  <button routerLink="/chat" class="chat-btn">Chat with organizer</button>
+                  <button [routerLink]="['/chat']" [queryParams]="{ organizerId: creatorProfile?.id, organizerName: creatorProfile?.name }" class="chat-btn">Chat with organizer</button>
                 </div>
               </div>
             </div>

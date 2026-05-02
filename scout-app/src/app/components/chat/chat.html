@@ -1,14 +1,72 @@
-<div class="chat-container">
-  <div class="messages">
-    <div *ngFor="let msg of messages" class="message">
-      <strong>{{ msg.senderName }}</strong>
-      <span class="time">{{ msg.timestamp | date:'shortTime' }}</span>
-      <p>{{ msg.content }}</p>
-    </div>
+<header class="header">
+  <div class="logo-bar">
+    <img class="logo" src="/pictures/logo-beige.png">
+    BePrepared
   </div>
+  <div class="header-right">
+    <button routerLink="/chat" class="current-btn">Chat</button>
+    <button routerLink="/events" class="header-btns">All Events</button>
+    <button routerLink="/myevents" class="header-btns">My Events</button>
+    <button routerLink="/badges" class="header-btns">Badges</button>
+    <button routerLink="/statistics" class="header-btns">Statistics</button>
+    <button routerLink="/editprofile" class="header-btns">Profile</button>
+  </div>
+</header>
 
-  <div class="input-area">
-    <input [(ngModel)]="newMessage" (keyup.enter)="send()" placeholder="Type a message..." />
-    <button (click)="send()">Send</button>
-  </div>
+<div class="chat-layout">
+  <!-- Sidebar for Past Chats -->
+  <aside class="chat-sidebar">
+    <div class="sidebar-header">
+      <h2>Conversations</h2>
+    </div>
+    <div class="chat-list">
+      <div 
+        *ngFor="let chat of pastChats" 
+        class="chat-list-item" 
+        [class.active]="chat.id === organizerId"
+        (click)="selectChat(chat)">
+        <div class="chat-avatar">
+          {{ chat.name.charAt(0) }}
+        </div>
+        <div class="chat-info">
+          <div class="chat-info-header">
+            <span class="chat-name">{{ chat.name }}</span>
+            <span class="chat-time">{{ chat.time }}</span>
+          </div>
+          <div class="chat-last-message">
+            <span class="message-text">{{ chat.lastMessage }}</span>
+            <span *ngIf="chat.unread > 0" class="unread-badge">{{ chat.unread }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Main Chat Area -->
+  <main class="chat-main">
+    <div class="chat-header">
+      <div class="chat-avatar">{{ organizerName.charAt(0) }}</div>
+      <div class="chat-header-info">
+        <h3>{{ organizerName }}</h3>
+      </div>
+    </div>
+
+    <div class="messages-area">
+      <div *ngFor="let msg of messages" class="message-wrapper" [class.sent]="msg.senderId === currentUser.id" [class.received]="msg.senderId !== currentUser.id">
+        <div class="message-content">
+          <p>{{ msg.content }}</p>
+          <span class="time">{{ msg.timestamp | date:'shortTime' }}</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="input-area">
+      <input [(ngModel)]="newMessage" (keyup.enter)="send()" placeholder="Type your message..." />
+      <button (click)="send()">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="20" height="20">
+          <path d="M3.478 2.405a.75.75 0 00-.926.94l2.432 7.905H13.5a.75.75 0 010 1.5H4.984l-2.432 7.905a.75.75 0 00.926.94 60.519 60.519 0 0018.445-8.986.75.75 0 000-1.218A60.517 60.517 0 003.478 2.405z" />
+        </svg>
+      </button>
+    </div>
+  </main>
 </div>
