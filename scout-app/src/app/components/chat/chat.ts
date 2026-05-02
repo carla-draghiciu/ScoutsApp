@@ -33,6 +33,13 @@ export class Chat implements OnInit, OnDestroy {
     );
   }
 
+  async send() {
+    const text = this.newMessage.trim();
+    if (!text) return;
+    await this.chatService.sendMessage(this.roomId, this.currentUser.id, this.currentUser.name, text);
+    this.newMessage = '';
+  }
+
   ngOnDestroy() {
     this.chatService.leaveRoom(this.roomId);
     this.chatService.stopConnection();
