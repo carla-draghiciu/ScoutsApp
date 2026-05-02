@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using scout_api.DTOs;
 using scout_api.Enums;
+using scout_api.Mappers;
 using scout_api.Models;
 using scout_api.Validators;
 
@@ -112,11 +113,12 @@ namespace scout_api.Services
             return user;
         }
 
-        public User? GetUserById(int id)
+        public UserDTO? GetUserById(int id)
         {
             return _context.Users
                 .Include(u => u.EarnedBadges)
-                .FirstOrDefault(u => u.Id == id);
+                .FirstOrDefault(u => u.Id == id)
+                .ToDto();
         }
     }
 }
