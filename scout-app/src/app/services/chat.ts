@@ -8,7 +8,7 @@ export interface ChatMessage {
   senderId: number;
   senderName: string;
   content: string;
-  timestamp: string;
+  timeStamp: string;
 }
 
 @Injectable({

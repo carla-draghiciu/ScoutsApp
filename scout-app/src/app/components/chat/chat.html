@@ -55,7 +55,7 @@
       <div *ngFor="let msg of messages" class="message-wrapper" [class.sent]="msg.senderId === currentUser.id" [class.received]="msg.senderId !== currentUser.id">
         <div class="message-content">
           <p>{{ msg.content }}</p>
-          <span class="time">{{ msg.timestamp | date:'shortTime' }}</span>
+          <span class="time">{{ msg.timeStamp | date:'shortTime' }}</span>
         </div>
       </div>
     </div>
