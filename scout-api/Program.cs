@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using scout_api;
 using scout_api.Controllers;
+using scout_api.Hubs;
 using scout_api.Services;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -15,6 +16,8 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddSingleton<SessionService>();
 builder.Services.AddScoped<EventService>();
 builder.Services.AddScoped<UserService>();
+builder.Services.AddSingleton<ChatService>();
+builder.Services.AddSignalR();
 
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(
@@ -27,7 +30,8 @@ builder.Services.AddCors(options =>
     options.AddPolicy("AllowAngular", policy =>
         policy.WithOrigins("http://localhost:4200")
               .AllowAnyHeader()
-              .AllowAnyMethod());
+              .AllowAnyMethod()
+              .AllowCredentials()); // for SignalR
 });
 
 var app = builder.Build();
@@ -49,6 +53,8 @@ app.UseExceptionHandler(a => a.Run(async context =>
 app.UseHttpsRedirection();
 
 app.UseCors("AllowAngular");
+
+app.MapHub<ChatHub>("/hubs/chat");
 
 app.UseAuthorization();
 
