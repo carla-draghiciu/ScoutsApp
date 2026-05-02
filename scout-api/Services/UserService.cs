@@ -70,7 +70,8 @@ namespace scout_api.Services
                 ScoutId = registeringUser.ScoutId,
                 DateOfBirth = DateTime.Parse(registeringUser.DateOfBirth),
                 ScoutLevel = level,
-                Password = BCrypt.Net.BCrypt.HashPassword(registeringUser.Password)
+                Password = BCrypt.Net.BCrypt.HashPassword(registeringUser.Password),
+                RoleId = 2
             };
 
             _context.Users.Add(registered);
@@ -85,7 +86,6 @@ namespace scout_api.Services
 
         public (User user, string token, string role, List<string> permissions)? Login(LoginDTO logingUser)
         {
-            //User? user = FindUserByEmail(logingUser.Email);
             User? user = _context.Users
                 .Include(u => u.Role)
                     .ThenInclude(r => r.RolePermissions)
