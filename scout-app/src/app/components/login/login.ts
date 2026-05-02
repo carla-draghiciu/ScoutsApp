@@ -29,8 +29,9 @@ export class Login {
       next: (response: any) => {
         localStorage.setItem('token', response.token);
         localStorage.setItem('userName', response.name);
-        localStorage.setItem('userEmail', response.email);
         localStorage.setItem('userId', response.userId);
+        localStorage.setItem('role', response.role);
+        localStorage.setItem('permissions', JSON.stringify(response.permissions));
         this.router.navigate(['/events']);
       },
       error: err => {
