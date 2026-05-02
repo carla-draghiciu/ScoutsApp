@@ -1,0 +1,15 @@
+﻿using MongoDB.Bson;
+using MongoDB.Bson.Serialization.Attributes;
+
+namespace scout_api.Models
+{
+    public class ChatMessage
+    {
+        public int Id { get; set; }
+        public string RoomId { get; set; }
+        public int SenderId { get; set; }
+        public string SenderName { get; set; }
+        public string Content { get; set; }
+        public DateTime TimeStamp { get; set; } = DateTime.UtcNow;
+    }
+}
