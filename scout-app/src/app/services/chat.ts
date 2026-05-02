@@ -22,7 +22,7 @@ export class ChatService {
   
   startConnection(): Promise<void> {
     this.hub = new signalR.HubConnectionBuilder()
-      .withUrl('https://localhost:500/hubs/chat')
+      .withUrl('https://localhost:5000/hubs/chat')
       .withAutomaticReconnect()
       .build();
 
