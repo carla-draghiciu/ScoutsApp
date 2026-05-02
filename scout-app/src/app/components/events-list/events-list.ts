@@ -9,6 +9,7 @@ import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { OnInit } from '@angular/core';
 import { ChangeDetectorRef } from '@angular/core';
+import { PermissionService } from '../../services/permission';
 
 @Component({
   selector: 'app-events-list',
@@ -26,6 +27,9 @@ export class EventsList implements OnInit {
   isLoading = false;
 
 
+  canViewEvents: boolean = false;
+
+
   allLocations: string[] = [];
 
   filterStatus: 'all' | 'attending' | 'notAttending' = 'all';
@@ -39,7 +43,9 @@ export class EventsList implements OnInit {
   constructor(
     private cdr: ChangeDetectorRef, 
     private service: EventService, 
-    private cookie: CookieService) {}
+    private cookie: CookieService,
+    private permissionService: PermissionService
+  ) {}
 
   loadEvents() {
     console.log('user is', this.userId);
@@ -56,6 +62,10 @@ export class EventsList implements OnInit {
   }
 
   ngOnInit() {
+    this.canViewEvents = this.permissionService.hasPermission('view_events');
+    if (!this.canViewEvents) {
+      return;
+    }
     this.loadEvents();
 
     this.service.getLocations().subscribe({
