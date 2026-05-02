@@ -5,6 +5,7 @@ import { CookieService } from '../../services/cookie.service';
 import { OnInit } from '@angular/core';
 import { ChangeDetectorRef } from '@angular/core';
 import { AuthService, UserProfile } from '../../services/auth';
+import { PermissionService } from '../../services/permission';
 
 @Component({
   selector: 'app-event-detail',
@@ -17,20 +18,22 @@ export class EventDetail implements OnInit {
   userId = Number(localStorage.getItem('userId'));
   creatorProfile: UserProfile | undefined;
 
+  canJoinEvent: boolean = false;
+
   constructor(
     private route: ActivatedRoute, 
     private service: EventService, 
     private cookie: CookieService,
     private cdr: ChangeDetectorRef,
-    private userService: AuthService
+    private userService: AuthService,
+    private permissionService: PermissionService
   ) { }
 
   ngOnInit() {
     const idParam = this.route.snapshot.paramMap.get('id');
     const id = idParam ? Number(idParam) : NaN;
-    console.log('EventDetail ngOnInit: idParam=', idParam, 'id=', id);
-    console.log(typeof id);
-    
+
+    this.canJoinEvent = this.permissionService.hasPermission('join_event');
 
     this.service.getById(id).subscribe(event => {
       this.event = event;
@@ -52,6 +55,11 @@ export class EventDetail implements OnInit {
 
 
   toggleAttendance(): void {
+    if (!this.canJoinEvent) {
+      alert('You do not have permission to join events.');
+      return;
+    }
+
     if (this.event) {
       this.service.toggleAttendance(this.event.id).subscribe({
         
