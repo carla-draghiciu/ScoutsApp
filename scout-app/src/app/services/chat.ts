@@ -3,7 +3,7 @@ import * as signalR from '@microsoft/signalr';
 import { Subject } from 'rxjs';
 
 export interface ChatMessage {
-  id: number;
+  id: string;
   roomId: string;
   senderId: number;
   senderName: string;
@@ -21,18 +21,22 @@ export class ChatService {
   historyLoaded$ = new Subject<ChatMessage[]>();
   
   startConnection(): Promise<void> {
+    console.log("start conn for chat");
     this.hub = new signalR.HubConnectionBuilder()
-      .withUrl('https://localhost:5000/hubs/chat')
+      .withUrl('https://localhost:7239/hubs/chat')
       .withAutomaticReconnect()
       .build();
 
+    console.log("start conn for chat2");
     this.hub.on('ReceiveMessage', (message: ChatMessage) => {
       this.messageReceived$.next(message);
     });
+    console.log("start conn for chat3");
 
     this.hub.on('LoadChatHistory', (messages: ChatMessage[]) => {
       this.historyLoaded$.next(messages.reverse());
     });
+    console.log("start conn for chat4");
 
     return this.hub.start();
   }

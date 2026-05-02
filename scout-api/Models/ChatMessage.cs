@@ -7,7 +7,7 @@ namespace scout_api.Models
     {
         [BsonId]
         [BsonRepresentation(BsonType.ObjectId)]
-        public int Id { get; set; }
+        public string Id { get; set; }
         public string RoomId { get; set; }
         public int SenderId { get; set; }
         public string SenderName { get; set; }
