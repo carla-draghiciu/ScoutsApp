@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { EventService } from '../../services/event';
+import { PermissionService } from '../../services/permission';
 
 @Component({
   selector: 'app-create-event-form',
@@ -31,11 +32,18 @@ export class CreateEventForm {
     };
 
   errorMessage = '';
+  canCreateEvent: boolean = false;
 
-  constructor(private service: EventService, private router: Router) { }
+  constructor(private service: EventService, private router: Router, private permissionService: PermissionService) { 
+    this.canCreateEvent = this.permissionService.hasPermission('create_event');
+  }
 
   submit(): void {
-    console.log('CreateEventForm submit: event=', this.event);
+    if (!this.canCreateEvent) {
+      alert('You do not have permission to create events.');
+      return;
+    }
+    
     this.errorMessage = '';
     
     if (!this.event.name || !this.event.description || !this.event.startDate || !this.event.endDate || !this.event.registrationDeadline || !this.event.location || this.event.price === null || this.event.price === undefined) {
@@ -64,17 +72,6 @@ export class CreateEventForm {
       return;
     }
 
-    // const created = this.service.add({
-    //   name: this.event.name.trim(),
-    //   location: this.event.location.trim(),
-    //   startDate: this.event.startDate,
-    //   endDate: this.event.endDate,
-    //   price: Number(this.event.price) || 0,
-    //   registrationDeadline: this.event.registrationDeadline,
-    //   description: this.event.description.trim(),
-    //   equipment: this.event.equipment.trim(),
-    // });
-
     this.service.add({
       name: this.event.name.trim(),
       location: this.event.location.trim(),
@@ -88,7 +85,5 @@ export class CreateEventForm {
       alert(`Event "${created.name}" created successfully!`);
       this.router.navigate(['/events']);
     });
-
-    // this.router.navigate(['/events']);
   }
 }
