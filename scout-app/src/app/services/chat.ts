@@ -44,4 +44,12 @@ export class ChatService {
   leaveRoom(roomId: string) {
     return this.hub.invoke('LeaveRoom', roomId);
   }
+
+  sendMessage(roomId: string, senderId: number, senderName: string, content: string) {
+    return this.hub.invoke('SendMessage', roomId, senderId, senderName, content);
+  }
+
+  stopConnection() {
+    return this.hub?.stop();
+  }
 }
