@@ -36,7 +36,7 @@ namespace scout_api.Models
         public DateTime RegistrationDeadline { get; set; }
 
         [MaxLength(500)]
-        public string Equipment { get; set; } = string.Empty;
+        public string? Equipment { get; set; } = string.Empty;
         public List<EventAttendee> Attendees { get; set; } = new();
 
         // user foreign key

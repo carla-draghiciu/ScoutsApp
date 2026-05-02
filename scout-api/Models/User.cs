@@ -34,6 +34,11 @@ namespace scout_api.Models
         [MaxLength(100)]
         public string Password { get; set; } = string.Empty;
 
+        public int RoleId { get; set; } = 2; // default to normal user
+
+        [ForeignKey("RoleId")]
+        public Role Role { get; set; }
+
 
         public List<UserBadge> EarnedBadges { get; set; } = new();
         public List<ScoutEvent> CreatedEvents { get; set; } = new();
