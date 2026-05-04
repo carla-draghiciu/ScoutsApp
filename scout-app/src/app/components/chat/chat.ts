@@ -59,7 +59,7 @@ export class Chat implements OnInit, OnDestroy {
 
   private subscribeToChat() {
     this.subs.add(
-      this.chatService.historyLoaded$.subscribe(history => this.messages = history)
+      this.chatService.historyLoaded$.subscribe(history =>{ this.messages = history; this.cdr.detectChanges(); })
     );
 
     this.subs.add(
@@ -150,18 +150,22 @@ export class Chat implements OnInit, OnDestroy {
   }
 
   async selectChat(chat: PastChat) {
+    if (this.organizerId === chat.id) return; // already in this chat
+
     this.organizerId = chat.id;
     this.organizerName = chat.name;
-    const ids = [this.currentUser.id, this.organizerId].sort();
-    const newRoomId = `chat_${ids[0]}_${ids[1]}`;
-    if (this.roomId !== newRoomId) {
-      if (this.roomId) {
-        this.chatService.leaveRoom(this.roomId);
-      }
-      this.roomId = newRoomId;
-      this.messages = []; 
-      await this.chatService.joinRoom(this.roomId);
+
+    if (this.roomId) {
+      this.chatService.leaveRoom(this.roomId);
     }
+
+    this.messages = []; // clear first
+    this.cdr.detectChanges(); // force UI update
+
+    const ids = [String(this.currentUser.id), String(this.organizerId)].sort();
+    this.roomId = `chat_${ids[0]}_${ids[1]}`;
+
+    await this.chatService.joinRoom(this.roomId);
   }
 
   async send() {
