@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using scout_api;
 using scout_api.Controllers;
 using scout_api.Hubs;
+using scout_api.Middleware;
 using scout_api.Services;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -16,6 +17,7 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddSingleton<SessionService>();
 builder.Services.AddScoped<EventService>();
 builder.Services.AddScoped<UserService>();
+builder.Services.AddScoped<LoggingService>();
 builder.Services.AddSingleton<ChatService>();
 builder.Services.AddSignalR();
 
@@ -51,6 +53,8 @@ app.UseExceptionHandler(a => a.Run(async context =>
 }));
 
 app.UseHttpsRedirection();
+
+app.UseMiddleware<LoggingMiddleware>();
 
 app.UseCors("AllowAngular");
 
