@@ -37,7 +37,7 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAngular", policy =>
-        policy.WithOrigins("http://localhost:4200")
+        policy.WithOrigins("http://localhost:4200", "http://192.168.100.30:4200")
               .AllowAnyHeader()
               .AllowAnyMethod()
               .AllowCredentials()); // for SignalR
@@ -59,9 +59,7 @@ app.UseExceptionHandler(a => a.Run(async context =>
         await context.Response.WriteAsJsonAsync(new { error = ex.Error.Message, detail = ex.Error.ToString() });
 }));
 
-//app.UseCors("AllowAngular");
-
-app.UseHttpsRedirection();
+//app.UseHttpsRedirection();
 
 app.UseMiddleware<LoggingMiddleware>();
 
