@@ -8,6 +8,7 @@ import { ChangeDetectorRef } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { AuthService } from '../../services/auth';
 import { environment } from '../../../environments/environment';
+import { NgZone } from '@angular/core';
 
 export interface PastChat {
   id: string | undefined;
@@ -46,7 +47,8 @@ export class Chat implements OnInit, OnDestroy {
     private cdr: ChangeDetectorRef, 
     private chatService: ChatService, 
     private route: ActivatedRoute, 
-    private userService: AuthService
+    private userService: AuthService,
+    private ngZone: NgZone
   ) { }
 
   async ngOnInit() {
@@ -59,18 +61,30 @@ export class Chat implements OnInit, OnDestroy {
 
   private subscribeToChat() {
     this.subs.add(
-      this.chatService.historyLoaded$.subscribe(history =>{ this.messages = history; this.cdr.detectChanges(); })
+      this.chatService.historyLoaded$.subscribe(history =>{ this.ngZone.run(() => {
+        this.messages = history;
+        this.cdr.detectChanges();
+      }); })
     );
 
     this.subs.add(
       this.chatService.messageReceived$.subscribe(message => {
-        this.messages.push(message);
+      //   this.messages.push(message);
+      //   const chatInSidebar = this.pastChats.find(c => c.id === this.organizerId);
+      //   if (chatInSidebar) {
+      //     chatInSidebar.lastMessage = message.content;
+      //     chatInSidebar.time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      //   }
+      // })
+      this.ngZone.run(() => {
+        this.messages = [...this.messages, message]; // create new array reference
         const chatInSidebar = this.pastChats.find(c => c.id === this.organizerId);
         if (chatInSidebar) {
           chatInSidebar.lastMessage = message.content;
           chatInSidebar.time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
         }
-      })
+        this.cdr.detectChanges();
+      });})
     );
   }
 

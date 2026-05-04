@@ -31,11 +31,13 @@ export class ChatService {
 
     console.log("start conn for chat2");
     this.hub.on('ReceiveMessage', (message: ChatMessage) => {
+      console.log('ReceiveMessage fired:', message);
       this.messageReceived$.next(message);
     });
     console.log("start conn for chat3");
 
     this.hub.on('LoadChatHistory', (messages: ChatMessage[]) => {
+      console.log('LoadHistory fired:', messages);
       this.historyLoaded$.next(messages.reverse());
     });
     console.log("start conn for chat4");
