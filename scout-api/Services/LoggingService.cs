@@ -8,7 +8,7 @@ namespace scout_api.Services
         private readonly AppDbContext _context;
 
         private const int MAX_ACTIONS_PER_MINUTE = 20;
-        private const int MAX_ACTIONS_PER_HOUR = 100;
+        private const int MAX_ACTIONS_PER_HOUR = 10;
         private const int MAX_DELETE_ACTIONS_PER_HOUR = 10;
 
         public LoggingService(AppDbContext context)
@@ -58,6 +58,8 @@ namespace scout_api.Services
 
             // Check 3: too many delete actions
             var deleteActions = recentLogs.Count(l => l.HttpMethod == "DELETE" || l.Action.Contains("Delete"));
+            Console.WriteLine("logginngggg");
+            Console.WriteLine($"deletes are {deleteActions}");
             if (deleteActions >= MAX_DELETE_ACTIONS_PER_HOUR)
                 reasons.Add($"Performed {deleteActions} delete actions in under 1 hour (threshold: {MAX_DELETE_ACTIONS_PER_HOUR})");
 

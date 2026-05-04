@@ -1,6 +1,8 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { HttpHeaders } from '@angular/common/http';
+import { environment } from '../../environments/environment';
 
 export interface Badge {
   id: number;
@@ -31,7 +33,10 @@ export interface EventModel {
   providedIn: 'root',
 })
 export class EventService {
-  private apiUrl = "https://localhost:7239/api/Events";
+  env = environment.apiUrl;
+  // private apiUrl = "https://localhost:7239/api/Events";
+  private apiUrl = `${this.env}/api/Events`;
+  headers = new HttpHeaders({ Authorization: `Bearer ${localStorage.getItem('token')}` });
 
   constructor(private http: HttpClient) { }
 
@@ -66,11 +71,11 @@ export class EventService {
   }
 
   update(id: number, draft: Partial<Omit<EventModel, 'id' | 'creatorId' | 'attendees'>>): Observable<EventModel | undefined> {
-    return this.http.put<EventModel>(`${this.apiUrl}/${id}`, draft);
+    return this.http.put<EventModel>(`${this.apiUrl}/${id}`, draft, { headers: this.headers });
   }
 
   delete(id: number): Observable<void> {
-    return this.http.delete<void>(`${this.apiUrl}/${id}`);
+    return this.http.delete<void>(`${this.apiUrl}/${id}`, {headers: this.headers});
   }
 
   toggleAttendance(eventId: number): Observable<void> {

@@ -16,6 +16,9 @@ namespace scout_api.Middleware
             // Only log authenticated requests
             var token = context.Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
 
+            //var token = context.Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
+            Console.WriteLine($"---------------------------------Middleware {context.Request.Method} {context.Request.Path} | Token: {(string.IsNullOrEmpty(token) ? "MISSING" : "present")}");
+
             if (!string.IsNullOrEmpty(token))
             {
                 var user = sessionService.Sessions.GetValueOrDefault(token);

@@ -12,6 +12,7 @@ import { EditEvent } from './components/edit-event/edit-event';
 import { MyEvents } from './components/my-events/my-events';
 import { EditProfile } from './components/edit-profile/edit-profile';
 import { Chat } from './components/chat/chat';
+import { ObservationsList } from './components/observations-list/observations-list';
 
 // export const routes: Routes = [];
 export const routes: Routes = [
@@ -29,4 +30,5 @@ export const routes: Routes = [
   { path: 'edit/:id', component: CreateEventForm },
   { path: 'editprofile', component: EditProfile },
   { path: 'chat', component: Chat },
+  { path: 'admin/observation', component: ObservationsList }
 ];

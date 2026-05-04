@@ -7,6 +7,7 @@ import { ActivatedRoute, RouterLink } from '@angular/router';
 import { ChangeDetectorRef } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { AuthService } from '../../services/auth';
+import { environment } from '../../../environments/environment';
 
 export interface PastChat {
   id: string | undefined;
@@ -29,6 +30,8 @@ export class Chat implements OnInit, OnDestroy {
   organizerName = 'Organizer';
   organizerId?: string;
   connectionStarted = false;
+
+  env = environment.apiUrl;
   
   currentUser = {
     id: Number(localStorage.getItem('userId')),
@@ -73,7 +76,7 @@ export class Chat implements OnInit, OnDestroy {
 
   private loadPastConversations(): Promise<void> {
     return new Promise(resolve => {
-      this.http.get<ChatMessage[]>(`https://localhost:7239/api/chat/conversations/${this.currentUser.id}`)
+      this.http.get<ChatMessage[]>(`${this.env}/api/chat/conversations/${this.currentUser.id}`)
         .subscribe({
           next: conversations => {
             if (!conversations.length) { resolve(); return; }

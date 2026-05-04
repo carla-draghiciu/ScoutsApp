@@ -1,0 +1,38 @@
+<div class="admin-panel">
+  <h2> Observation List</h2>
+  <p *ngIf="entries.length === 0">No suspicious users detected.</p>
+  <div class="entry" *ngFor="let entry of entries">
+    <div class="entry-header">
+      <span class="user">{{ entry.user.name }} ({{ entry.user.email }})</span>
+      <span class="time">{{ entry.flaggedAt | date:'medium' }}</span>
+    </div>
+    <div class="reason">{{ entry.reason }}</div>
+    <div class="actions">
+      <button (click)="viewLogs(entry.userId)">View Logs</button>
+      <button (click)="resolve(entry.id)">Resolve</button>
+    </div>
+
+    <!-- Inline logs panel -->
+    <div class="logs" *ngIf="selectedUserId === entry.userId && userLogs.length">
+      <h4>Action Logs</h4>
+      <table>
+        <thead>
+          <tr>
+            <th>Timestamp</th>
+            <th>Action</th>
+            <th>Method</th>
+            <th>Endpoint</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let log of userLogs">
+            <td>{{ log.timestamp | date:'medium' }}</td>
+            <td>{{ log.action }}</td>
+            <td>{{ log.httpMethod }}</td>
+            <td>{{ log.endpoint }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

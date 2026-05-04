@@ -28,6 +28,7 @@ export class EventsList implements OnInit {
 
 
   canViewEvents: boolean = false;
+  isAdmin: boolean = false;
 
 
   allLocations: string[] = [];
@@ -63,6 +64,7 @@ export class EventsList implements OnInit {
 
   ngOnInit() {
     this.canViewEvents = this.permissionService.hasPermission('view_events');
+    this.isAdmin = this.permissionService.isAdmin();
     if (!this.canViewEvents) {
       return;
     }
