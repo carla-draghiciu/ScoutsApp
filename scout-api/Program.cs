@@ -26,14 +26,6 @@ builder.Services.AddDbContext<AppDbContext>(options =>
         builder.Configuration.GetConnectionString("DefaultConnection")
     ));
 
-//builder.Services.AddCors(options =>
-//{
-//    options.AddPolicy("AllowAngular", policy =>
-//        policy.AllowAnyOrigin()
-//              .AllowAnyHeader()
-//              .AllowAnyMethod());
-//              //.AllowCredentials()); // for SignalR
-//});
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAngular", policy =>

@@ -5,6 +5,8 @@ import { FormsModule } from '@angular/forms';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { ChangeDetectorRef } from '@angular/core';
 import { environment } from '../../../environments/environment';
+import { PermissionService } from '../../services/permission';
+import { RouterLink } from '@angular/router';
 
 interface ObservationEntry {
   id: number;
@@ -17,7 +19,7 @@ interface ObservationEntry {
 
 @Component({
   selector: 'app-observations-list',
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, RouterLink],
   templateUrl: './observations-list.html',
   styleUrl: './observations-list.css',
 })
@@ -26,15 +28,17 @@ export class ObservationsList implements OnInit {
   entries: ObservationEntry[] = [];
   userLogs: any[] = [];
   selectedUserId: number | null = null;
+  isAdmin: boolean = false;
 
   private get headers() {
     return new HttpHeaders({ Authorization: `Bearer ${localStorage.getItem('token')}` });
   }
 
-  constructor(private http: HttpClient, private cdr: ChangeDetectorRef) {}
+  constructor(private http: HttpClient, private cdr: ChangeDetectorRef, private permissionService: PermissionService) {}
 
   ngOnInit() {
     this.loadEntries();
+    this.isAdmin = this.permissionService.isAdmin();
   }
 
   loadEntries() {

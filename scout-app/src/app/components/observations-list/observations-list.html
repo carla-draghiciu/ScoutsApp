@@ -1,3 +1,18 @@
+<header class="header">
+  <div class="logo-bar">
+    <img class="logo" src="/pictures/logo-beige.png">
+    BePrepared
+  </div>
+  <div class="header-right">
+    <button routerLink="/chat" class="header-btns">Chat</button>
+    <button routerLink="/events" class="header-btns">All Events</button>
+    <button routerLink="/myevents" class="header-btns">My Events</button>
+    <button routerLink="/badges" class="header-btns">Badges</button>
+    <button routerLink="/statistics" class="header-btns">Statistics</button>
+    <button routerLink="/editprofile" class="header-btns">Profile</button>
+    <button *ngIf="isAdmin" routerLink="/admin/observation" class="current-btn">Observations</button>
+  </div>
+</header>
 <div class="admin-panel">
   <h2> Observation List</h2>
   <p *ngIf="entries.length === 0">No suspicious users detected.</p>

@@ -9,7 +9,7 @@ namespace scout_api.Services
 
         private const int MAX_ACTIONS_PER_MINUTE = 20;
         private const int MAX_ACTIONS_PER_HOUR = 10;
-        private const int MAX_DELETE_ACTIONS_PER_HOUR = 10;
+        private const int MAX_DELETE_ACTIONS_PER_HOUR = 5;
 
         public LoggingService(AppDbContext context)
         {
@@ -97,7 +97,7 @@ namespace scout_api.Services
         {
             return await _context.ObservationList
                 .Include(o => o.User)
-                .Where(o => !o.IsResolved)
+                .Where(o => !o.IsResolved && o.User.Role.Id != 1)
                 .OrderByDescending(o => o.FlaggedAt)
                 .ToListAsync();
         }

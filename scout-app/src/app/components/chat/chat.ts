@@ -69,22 +69,16 @@ export class Chat implements OnInit, OnDestroy {
 
     this.subs.add(
       this.chatService.messageReceived$.subscribe(message => {
-      //   this.messages.push(message);
-      //   const chatInSidebar = this.pastChats.find(c => c.id === this.organizerId);
-      //   if (chatInSidebar) {
-      //     chatInSidebar.lastMessage = message.content;
-      //     chatInSidebar.time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-      //   }
-      // })
-      this.ngZone.run(() => {
-        this.messages = [...this.messages, message]; // create new array reference
-        const chatInSidebar = this.pastChats.find(c => c.id === this.organizerId);
-        if (chatInSidebar) {
-          chatInSidebar.lastMessage = message.content;
-          chatInSidebar.time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-        }
-        this.cdr.detectChanges();
-      });})
+        this.ngZone.run(() => {
+          this.messages = [...this.messages, message]; // create new array reference
+          const chatInSidebar = this.pastChats.find(c => c.id === this.organizerId);
+          if (chatInSidebar) {
+            chatInSidebar.lastMessage = message.content;
+            chatInSidebar.time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+          }
+          this.cdr.detectChanges();
+        });
+      })
     );
   }
 
