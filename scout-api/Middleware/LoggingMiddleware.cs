@@ -21,7 +21,15 @@ namespace scout_api.Middleware
 
             if (!string.IsNullOrEmpty(token))
             {
-                var user = sessionService.Sessions.GetValueOrDefault(token);
+                if (!sessionService.IsSessionValid(token))
+                {
+                    context.Response.StatusCode = 401;
+                    await context.Response.WriteAsJsonAsync(new { error = "Session expired" });
+                    return;
+                }
+                sessionService.UpdateActivity(token);
+
+                var (user, _) = sessionService.Sessions.GetValueOrDefault(token);
                 if (user != null)
                 {
                     var endpoint = context.Request.Path.Value ?? "unknown";
