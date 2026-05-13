@@ -1,227 +1,330 @@
-﻿//using scout_api.DTOs;
-//using scout_api.Services;
-//using scout_api.Services;
-//using System;
-//using System.Collections.Generic;
-//using System.Linq;
-//using System.Text;
-//using System.Threading.Tasks;
+﻿using Microsoft.EntityFrameworkCore;
+using scout_api.DTOs;
+using scout_api.Enums;
+using scout_api.Models;
+using scout_api.Services;
+using scout_api.Services;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
-//namespace scout_api.tests
-//{
-//    [TestClass]
-//    public sealed class UserServiceTests
-//    {
-//        private UserService _service;
+namespace scout_api.tests
+{
+    [TestClass]
+    public sealed class UserServiceTests
+    {
 
-//        [TestInitialize]
-//        public void Setup()
-//        {
-//            _service = new UserService();
-//        }
+        private AppDbContext _context;
+        private UserService _userService;
+        private SessionService _sessionService;
 
-//        private RegisterDTO CreateValidRegisterDTO(string email = "test@test.com")
-//        {
-//            return new RegisterDTO
-//            {
-//                Name = "Test User",
-//                Email = email,
-//                ScoutId = "SC123",
-//                DateOfBirth = "2000/01/01",
-//                ScoutLevel = "Senior",
-//                Password = "Password123"
-//            };
-//        }
+        [TestInitialize]
+        public void Setup()
+        {
+            var options = new DbContextOptionsBuilder<AppDbContext>()
+                .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
+                .Options;
 
-//        private LoginDTO CreateValidLoginDTO(string email, string password)
-//        {
-//            return new LoginDTO
-//            {
-//                Email = email,
-//                Password = password
-//            };
-//        }
+            _context = new AppDbContext(options);
+            _sessionService = new SessionService();
+            _userService = new UserService(_context, _sessionService);
 
-//        [TestMethod]
-//        public void Register_ValidUser_ReturnsUser()
-//        {
-//            var dto = CreateValidRegisterDTO();
+            var adminRole = new Role { Id = 1, Name = "Admin" };
+            var userRole = new Role { Id = 2, Name = "User" };
+            _context.Roles.AddRange(adminRole, userRole);
 
-//            var result = _service.Register(dto);
+            var permissions = new List<Permission>
+            {
+                new Permission { Id = 1, Name = "manage_badges" },
+                new Permission { Id = 2, Name = "create_event" },
+                new Permission { Id = 3, Name = "update_event" },
+                new Permission { Id = 4, Name = "delete_event" },
+                new Permission { Id = 5, Name = "view_events" },
+                new Permission { Id = 6, Name = "join_event" }
+            };
+            _context.Permissions.AddRange(permissions);
 
-//            Assert.IsNotNull(result);
-//            Assert.AreEqual(dto.Email, result.Email);
-//        }
+            _context.RolePermissions.AddRange(
+                new RolePermission { RoleId = 1, PermissionId = 1 },
+                new RolePermission { RoleId = 1, PermissionId = 2 },
+                new RolePermission { RoleId = 1, PermissionId = 3 },
+                new RolePermission { RoleId = 1, PermissionId = 4 },
+                new RolePermission { RoleId = 1, PermissionId = 5 },
+                new RolePermission { RoleId = 1, PermissionId = 6 },
+                new RolePermission { RoleId = 2, PermissionId = 2 },
+                new RolePermission { RoleId = 2, PermissionId = 3 },
+                new RolePermission { RoleId = 2, PermissionId = 4 },
+                new RolePermission { RoleId = 2, PermissionId = 5 },
+                new RolePermission { RoleId = 2, PermissionId = 6 }
+            );
 
-//        [TestMethod]
-//        public void Register_DuplicateEmail_ReturnsNull()
-//        {
-//            var dto = CreateValidRegisterDTO("dup@test.com");
+            _context.SaveChanges();
+        }
 
-//            _service.Register(dto);
-//            var result = _service.Register(dto);
+        [TestCleanup]
+        public void Cleanup()
+        {
+            _context.Dispose();
+        }
 
-//            Assert.IsNull(result);
-//        }
+        private User SeedUser(string email = "test@test.com", string name = "Test User", int roleId = 2)
+        {
+            var user = new User
+            {
+                Name = name,
+                Email = email,
+                Password = BCrypt.Net.BCrypt.HashPassword("Password123!"),
+                ScoutId = "TST001",
+                DateOfBirth = new DateTime(1995, 1, 1),
+                ScoutLevel = ScoutLevel.Explorator,
+                RoleId = roleId
+            };
+            _context.Users.Add(user);
+            _context.SaveChanges();
+            return user;
+        }
 
-//        [TestMethod]
-//        public void Register_InvalidScoutLevel_ReturnsNull()
-//        {
-//            var dto = CreateValidRegisterDTO();
-//            dto.ScoutLevel = "INVALID";
+        private RegisterDTO ValidRegisterDto(string email = "new@test.com") => new RegisterDTO
+        {
+            Name = "New User",
+            Email = email,
+            Password = "Password123!",
+            ScoutId = "NEW001",
+            DateOfBirth = "1995-06-15",
+            ScoutLevel = "Junior"
+        };
 
-//            var result = _service.Register(dto);
+        private LoginDTO LoginDtoFor(string email, string password = "Password123!") => new LoginDTO
+        {
+            Email = email,
+            Password = password
+        };
 
-//            Assert.IsNull(result);
-//        }
 
-//        [TestMethod]
-//        [ExpectedException(typeof(Exception))]
-//        public void Register_InvalidData_Throws()
-//        {
-//            var dto = new RegisterDTO
-//            {
-//                Name = "", // invalid
-//                Email = "bad",
-//                ScoutId = "x",
-//                DateOfBirth = "2000/01/01",
-//                ScoutLevel = "Senior",
-//                Password = "123"
-//            };
+        [TestMethod]
+        public void GetAll_ReturnsAllUsers()
+        {
+            SeedUser("user1@test.com");
+            SeedUser("user2@test.com");
 
-//            _service.Register(dto);
-//        }
+            var result = _userService.GetAll();
 
-//        [TestMethod]
-//        public void Login_ValidCredentials_ReturnsToken()
-//        {
-//            var dto = CreateValidRegisterDTO("login@test.com");
-//            var user = _service.Register(dto);
+            Assert.AreEqual(2, result.Count);
+        }
 
-//            var login = CreateValidLoginDTO(dto.Email, dto.Password);
+        [TestMethod]
+        public void GetAll_EmptyDatabase_ReturnsEmptyList()
+        {
+            var result = _userService.GetAll();
 
-//            var result = _service.Login(login);
+            Assert.AreEqual(0, result.Count);
+        }
 
-//            Assert.IsNotNull(result);
-//            Assert.AreEqual(user.Id, result.Value.user.Id);
-//            Assert.IsFalse(string.IsNullOrEmpty(result.Value.token));
-//        }
+        [TestMethod]
+        public void FindUserByEmail_ExistingEmail_ReturnsUser()
+        {
+            SeedUser("find@test.com");
 
-//        [TestMethod]
-//        public void Login_UserNotFound_ReturnsNull()
-//        {
-//            var login = CreateValidLoginDTO("nouser@test.com", "Password123");
+            var result = _userService.FindUserByEmail("find@test.com");
 
-//            var result = _service.Login(login);
+            Assert.IsNotNull(result);
+            Assert.AreEqual("find@test.com", result.Email);
+        }
 
-//            Assert.IsNull(result);
-//        }
+        [TestMethod]
+        public void FindUserByEmail_NonExistingEmail_ReturnsNull()
+        {
+            var result = _userService.FindUserByEmail("ghost@test.com");
 
-//        [TestMethod]
-//        public void Login_WrongPassword_ReturnsNull()
-//        {
-//            var dto = CreateValidRegisterDTO("wrongpass@test.com");
-//            _service.Register(dto);
+            Assert.IsNull(result);
+        }
 
-//            var login = CreateValidLoginDTO(dto.Email, "WrongPassword");
+        [TestMethod]
+        public void Register_DuplicateEmail_ReturnsNull()
+        {
+            SeedUser("existing@test.com");
+            var dto = ValidRegisterDto("existing@test.com");
 
-//            var result = _service.Login(login);
+            var result = _userService.Register(dto);
 
-//            Assert.IsNull(result);
-//        }
+            Assert.IsNull(result);
+            Assert.AreEqual(1, _context.Users.Count()); // no new user added
+        }
 
-//        [TestMethod]
-//        public void Logout_RemovesSession()
-//        {
-//            var dto = CreateValidRegisterDTO("logout@test.com");
-//            _service.Register(dto);
+        [TestMethod]
+        public void Register_InvalidScoutLevel_ReturnsNull()
+        {
+            var dto = ValidRegisterDto();
+            dto.ScoutLevel = "InvalidLevel";
 
-//            var login = _service.Login(CreateValidLoginDTO(dto.Email, dto.Password));
+            var result = _userService.Register(dto);
 
-//            _service.Logout(login.Value.token);
+            Assert.IsNull(result);
+        }
 
-//            Assert.AreEqual(0, _service.GetSeshCount());
-//        }
+        [TestMethod]
+        public void Login_ValidCredentials_ReturnsUserAndToken()
+        {
+            SeedUser("login@test.com");
+            var dto = LoginDtoFor("login@test.com");
 
-//        [TestMethod]
-//        public void GetUserByToken_ReturnsUser()
-//        {
-//            var dto = CreateValidRegisterDTO("token@test.com");
-//            var user = _service.Register(dto);
+            var result = _userService.Login(dto);
 
-//            var login = _service.Login(CreateValidLoginDTO(dto.Email, dto.Password));
+            Assert.IsNotNull(result);
+            Assert.AreEqual("login@test.com", result.Value.user.Email);
+            Assert.IsFalse(string.IsNullOrEmpty(result.Value.token));
+        }
 
-//            var result = _service.GetUserByToken(login.Value.token);
+        [TestMethod]
+        public void Login_ValidCredentials_AddsToSession()
+        {
+            SeedUser("session@test.com");
+            var dto = LoginDtoFor("session@test.com");
 
-//            Assert.IsNotNull(result);
-//            Assert.AreEqual(user.Id, result.Id);
-//        }
+            var result = _userService.Login(dto);
 
-//        [TestMethod]
-//        public void GetUserByToken_InvalidToken_ReturnsNull()
-//        {
-//            var result = _service.GetUserByToken("invalid");
+            Assert.IsTrue(_sessionService.Sessions.ContainsKey(result.Value.token));
+        }
 
-//            Assert.IsNull(result);
-//        }
+        [TestMethod]
+        public void Login_ValidCredentials_ReturnsRoleAndPermissions()
+        {
+            SeedUser("role@test.com", roleId: 2);
+            var dto = LoginDtoFor("role@test.com");
 
-//        [TestMethod]
-//        public void FindUserByEmail_FindsUser()
-//        {
-//            var dto = CreateValidRegisterDTO("find@test.com");
-//            var user = _service.Register(dto);
+            var result = _userService.Login(dto);
 
-//            var result = _service.FindUserByEmail(dto.Email);
+            Assert.IsNotNull(result);
+            Assert.AreEqual("User", result.Value.role);
+            Assert.IsTrue(result.Value.permissions.Count > 0);
+            CollectionAssert.Contains(result.Value.permissions, "view_events");
+        }
 
-//            Assert.IsNotNull(result);
-//        }
+        [TestMethod]
+        public void Login_AdminUser_ReturnsAllPermissions()
+        {
+            SeedUser("admin@test.com", roleId: 1);
+            var dto = LoginDtoFor("admin@test.com");
 
-//        [TestMethod]
-//        public void FindUserByEmail_NotFound_ReturnsNull()
-//        {
-//            var result = _service.FindUserByEmail("none@test.com");
+            var result = _userService.Login(dto);
 
-//            Assert.IsNull(result);
-//        }
+            Assert.IsNotNull(result);
+            Assert.AreEqual("Admin", result.Value.role);
+            Assert.AreEqual(6, result.Value.permissions.Count);
+            CollectionAssert.Contains(result.Value.permissions, "manage_badges");
+        }
 
-//        [TestMethod]
-//        public void GetUserById_FindsUser()
-//        {
-//            var dto = CreateValidRegisterDTO("id@test.com");
-//            var user = _service.Register(dto);
+        [TestMethod]
+        public void Login_WrongPassword_ReturnsNull()
+        {
+            SeedUser("wrong@test.com");
+            var dto = LoginDtoFor("wrong@test.com", "WrongPassword!");
 
-//            var result = _service.GetUserById(user.Id);
+            var result = _userService.Login(dto);
 
-//            Assert.IsNotNull(result);
-//        }
+            Assert.IsNull(result);
+        }
 
-//        [TestMethod]
-//        public void GetUserById_NotFound_ReturnsNull()
-//        {
-//            var result = _service.GetUserById(999);
+        [TestMethod]
+        public void Login_NonExistingEmail_ReturnsNull()
+        {
+            var dto = LoginDtoFor("ghost@test.com");
 
-//            Assert.IsNull(result);
-//        }
+            var result = _userService.Login(dto);
 
-//        [TestMethod]
-//        public void GetAll_ReturnsUsers()
-//        {
-//            var users = _service.GetAll();
+            Assert.IsNull(result);
+        }
 
-//            Assert.IsTrue(users.Count > 0);
-//        }
+        [TestMethod]
+        public void Logout_ValidToken_RemovesFromSession()
+        {
+            SeedUser("logout@test.com");
+            var loginResult = _userService.Login(LoginDtoFor("logout@test.com"));
+            var token = loginResult!.Value.token;
 
-//        [TestMethod]
-//        public void GetAllLoggedIn_ReturnsSessions()
-//        {
-//            var dto = CreateValidRegisterDTO("session@test.com");
-//            _service.Register(dto);
-//            _service.Login(CreateValidLoginDTO(dto.Email, dto.Password));
+            _userService.Logout(token);
 
-//            var sessions = _service.GetAllLoggedIn();
+            Assert.IsFalse(_sessionService.Sessions.ContainsKey(token));
+        }
 
-//            Assert.IsTrue(sessions.Count > 0);
-//        }
+        [TestMethod]
+        public void Logout_InvalidToken_DoesNotThrow()
+        {
+            _userService.Logout("non-existent-token");
+        }
 
-//    }
-//}
+        [TestMethod]
+        public void GetUserByToken_ValidToken_ReturnsUser()
+        {
+            SeedUser("token@test.com");
+            var loginResult = _userService.Login(LoginDtoFor("token@test.com"));
+            var token = loginResult!.Value.token;
+
+            var result = _userService.GetUserByToken(token);
+
+            Assert.IsNotNull(result);
+            Assert.AreEqual("token@test.com", result.Email);
+        }
+
+        [TestMethod]
+        public void GetUserByToken_InvalidToken_ReturnsNull()
+        {
+            var result = _userService.GetUserByToken("fake-token");
+
+            Assert.IsNull(result);
+        }
+
+        [TestMethod]
+        public void GetUserById_ExistingId_ReturnsUserDto()
+        {
+            var seeded = SeedUser("byid@test.com");
+
+            var result = _userService.GetUserById(seeded.Id);
+
+            Assert.IsNotNull(result);
+            Assert.AreEqual("byid@test.com", result.Email);
+        }
+
+        [TestMethod]
+        public void GetUserById_NonExistingId_ReturnsNull()
+        {
+            var result = _userService.GetUserById(9999);
+
+            Assert.IsNull(result);
+        }
+
+        [TestMethod]
+        public void GetSeshCount_NoSessions_ReturnsZero()
+        {
+            var result = _userService.GetSeshCount();
+
+            Assert.AreEqual(0, result);
+        }
+
+        [TestMethod]
+        public void GetSeshCount_AfterLogin_ReturnsCorrectCount()
+        {
+            SeedUser("count1@test.com");
+            SeedUser("count2@test.com");
+
+            _userService.Login(LoginDtoFor("count1@test.com"));
+            _userService.Login(LoginDtoFor("count2@test.com"));
+
+            Assert.AreEqual(2, _userService.GetSeshCount());
+        }
+
+        [TestMethod]
+        public void GetAllLoggedIn_ReturnsCurrentSessions()
+        {
+            SeedUser("logged@test.com");
+            _userService.Login(LoginDtoFor("logged@test.com"));
+
+            var result = _userService.GetAllLoggedIn();
+
+            Assert.AreEqual(1, result.Count);
+            Assert.IsTrue(result.Values.Any(u => u.Email == "logged@test.com"));
+        }
+    }
+}

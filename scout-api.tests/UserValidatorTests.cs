@@ -30,10 +30,6 @@ namespace scout_api.tests
             UserValidator.ValidateName("John Doe");
         }
 
-        // ----------------------------
-        // EMAIL
-        // ----------------------------
-
         [TestMethod]
         [ExpectedException(typeof(Exception))]
         public void ValidateEmail_Null_Throws()
@@ -68,10 +64,6 @@ namespace scout_api.tests
             UserValidator.ValidateEmail("test@email.com");
         }
 
-        // ----------------------------
-        // DATE OF BIRTH
-        // ----------------------------
-
         [TestMethod]
         [ExpectedException(typeof(Exception))]
         public void ValidateDateOfBirth_FutureDate_Throws()
@@ -84,10 +76,6 @@ namespace scout_api.tests
         {
             UserValidator.ValidateDateOfBirth(DateTime.Now.AddYears(-20));
         }
-
-        // ----------------------------
-        // PASSWORD
-        // ----------------------------
 
         [TestMethod]
         [ExpectedException(typeof(Exception))]

@@ -30,10 +30,6 @@ namespace scout_api.tests
             EventValidator.ValidateName("Event Name");
         }
 
-        // ----------------------------
-        // LOCATION
-        // ----------------------------
-
         [TestMethod]
         [ExpectedException(typeof(Exception))]
         public void ValidateLocation_Null_Throws()
@@ -53,10 +49,6 @@ namespace scout_api.tests
         {
             EventValidator.ValidateLocation("Cluj");
         }
-
-        // ----------------------------
-        // DESCRIPTION
-        // ----------------------------
 
         [TestMethod]
         [ExpectedException(typeof(Exception))]
@@ -78,10 +70,6 @@ namespace scout_api.tests
             EventValidator.ValidateDescription("Some description");
         }
 
-        // ----------------------------
-        // START DATE
-        // ----------------------------
-
         [TestMethod]
         [ExpectedException(typeof(Exception))]
         public void ValidateStartDate_Past_Throws()
@@ -95,10 +83,6 @@ namespace scout_api.tests
             EventValidator.ValidateStartDate(DateTime.Now.AddDays(1));
         }
 
-        // ----------------------------
-        // END DATE
-        // ----------------------------
-
         [TestMethod]
         [ExpectedException(typeof(Exception))]
         public void ValidateEndDate_Past_Throws()
@@ -111,10 +95,6 @@ namespace scout_api.tests
         {
             EventValidator.ValidateEndDate(DateTime.Now.AddDays(2));
         }
-
-        // ----------------------------
-        // CHRONOLOGY
-        // ----------------------------
 
         [TestMethod]
         [ExpectedException(typeof(Exception))]
@@ -135,10 +115,6 @@ namespace scout_api.tests
             EventValidator.ValidateCronologity(start, end);
         }
 
-        // ----------------------------
-        // PRICE
-        // ----------------------------
-
         [TestMethod]
         [ExpectedException(typeof(Exception))]
         public void ValidatePrice_Negative_Throws()
@@ -152,10 +128,6 @@ namespace scout_api.tests
             EventValidator.ValidatePrice(0);
             EventValidator.ValidatePrice(10);
         }
-
-        // ----------------------------
-        // DEADLINE
-        // ----------------------------
 
         [TestMethod]
         [ExpectedException(typeof(Exception))]

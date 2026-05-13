@@ -1,243 +1,370 @@
-﻿//using scout_api.Enums;
-//using scout_api.Models;
-//using scout_api.Services;
-//using System;
-//using System.Collections.Generic;
-//using System.Linq;
-//using System.Text;
-//using System.Threading.Tasks;
+﻿using GreenDonut;
+using Microsoft.EntityFrameworkCore;
+using scout_api.DTOs;
+using scout_api.Enums;
+using scout_api.Models;
+using scout_api.Services;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
-//namespace scout_api.tests
-//{
-//    [TestClass]
-//    public sealed class EventServiceTests
-//    {
-//        private EventService _service;
-//        private User _user;
+namespace scout_api.tests
+{
+    [TestClass]
+    public sealed class EventServiceTests
+    {
+        private AppDbContext _context;
+        private EventService _eventService;
+        private User _adminUser;
+        private User _normalUser;
 
-//        private ScoutEvent CreateValidEvent()
-//        {
-//            return new ScoutEvent
-//            {
-//                Name = "Test Event",
-//                Location = "Test Location",
-//                StartDate = DateTime.Now.AddDays(10),
-//                EndDate = DateTime.Now.AddDays(11),
-//                Price = 10,
-//                RegistrationDeadline = DateTime.Now.AddDays(5),
-//                Description = "Test",
-//                Equipment = "None",
-//                CreatorId = 1,
-//                Attendees = new List<int>()
-//            };
-//        }
+        [TestInitialize]
+        public void Setup()
+        {
+            var options = new DbContextOptionsBuilder<AppDbContext>()
+                .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
+                .Options;
 
-//        [TestInitialize]
-//        public void Setup()
-//        {
-//            _user = new User { Id = 100 };
-//        }
+            _context = new AppDbContext(options);
+            _eventService = new EventService(_context);
 
-//        [TestMethod]
-//        public void GetAll_ReturnsAll_WhenNoPagination()
-//        {
+            var adminRole = new Role { Id = 1, Name = "Admin" };
+            var userRole = new Role { Id = 2, Name = "User" };
+            _context.Roles.AddRange(adminRole, userRole);
 
-//            _service = new EventService();
-//            var result = _service.GetAll(_user, StatusFilter.All, "", PriceFilter.All, -1, -1);
+            _adminUser = new User
+            {
+                Id = 1,
+                Name = "Admin User",
+                Email = "admin@test.com",
+                Password = "hashed",
+                ScoutId = "ADM001",
+                DateOfBirth = new DateTime(1990, 1, 1),
+                ScoutLevel = ScoutLevel.Senior,
+                RoleId = 1
+            };
 
-//            Assert.IsNotNull(result);
-//        }
+            _normalUser = new User
+            {
+                Id = 2,
+                Name = "Normal User",
+                Email = "user@test.com",
+                Password = "hashed",
+                ScoutId = "USR001",
+                DateOfBirth = new DateTime(1995, 1, 1),
+                ScoutLevel = ScoutLevel.Explorator,
+                RoleId = 2
+            };
 
-//        [TestMethod]
-//        public void GetAll_WithPagination_ReturnsPaged()
-//        {
-//            _service = new EventService();
-//            var result = _service.GetAll(_user, StatusFilter.All, "", PriceFilter.All, 1, 2);
+            _context.Users.AddRange(_adminUser, _normalUser);
+            _context.SaveChanges();
+        }
 
-//            Assert.IsNotNull(result);
-//        }
+        [TestCleanup]
+        public void Cleanup()
+        {
+            _context.Dispose();
+        }
 
-//        [TestMethod]
-//        public void GetUniqueLocations_ReturnsSortedDistinct()
-//        {
-//            _service = new EventService();
-//            var locations = _service.GetUniqueLocations();
+        private ScoutEvent SeedEvent(string name = "Test Event", int creatorId = 1, decimal price = 0)
+        {
+            var scoutEvent = new ScoutEvent
+            {
+                Name = name,
+                Location = "Bucharest",
+                Description = "A test event description that is long enough",
+                StartDate = DateTime.UtcNow.AddDays(5),
+                EndDate = DateTime.UtcNow.AddDays(6),
+                Price = price,
+                RegistrationDeadline = DateTime.UtcNow.AddDays(3),
+                CreatorId = creatorId
+            };
+            _context.Events.Add(scoutEvent);
+            _context.SaveChanges();
+            return scoutEvent;
+        }
 
-//            Assert.IsTrue(locations.Count > 0);
-//            CollectionAssert.AllItemsAreUnique(locations);
-//        }
+        private CreateScoutEventDTO ValidEventDto(string name = "New Event") => new CreateScoutEventDTO
+        {
+            Name = name,
+            Location = "Cluj",
+            Description = "A valid description for the event that is detailed enough",
+            StartDate = DateTime.UtcNow.AddDays(5),
+            EndDate = DateTime.UtcNow.AddDays(6),
+            Price = 0,
+            RegistrationDeadline = DateTime.UtcNow.AddDays(3),
+            Equipment = "Boots"
+        };
 
-//        [TestMethod]
-//        public void GetById_ReturnsEvent_WhenExists()
-//        {
-//            _service = new EventService();
 
-//            var all = _service.GetAll(_user, StatusFilter.All, "", PriceFilter.All, -1, -1) as List<ScoutEvent>;
-//            var knownId = all.First().Id;
+        [TestMethod]
+        public void GetAll_NoFilters_ReturnsAllEvents()
+        {
+            SeedEvent("Event 1");
+            SeedEvent("Event 2");
 
-//            var ev = _service.GetById(knownId);
-//            Assert.IsTrue(ev != null);
-//        }
+            var result = _eventService.GetAll(_adminUser, StatusFilter.All, "", PriceFilter.All, -1, -1);
 
-//        [TestMethod]
-//        public void GetById_ReturnsNull_WhenNotExists()
-//        {
-//            _service = new EventService();
-//            var ev = _service.GetById(999);
+            var list = result as List<ScoutEventDTO>;
+            Assert.IsNotNull(list);
+            Assert.AreEqual(2, list.Count);
+        }
 
-//            Assert.IsNull(ev);
-//        }
+        [TestMethod]
+        public void GetAll_FilterByAttending_ReturnsOnlyAttendedEvents()
+        {
+            var e1 = SeedEvent("Attended Event");
+            var e2 = SeedEvent("Not Attended Event");
 
-//        [TestMethod]
-//        public void GetByOwnerId_ReturnsEvents()
-//        {
-//            _service = new EventService();
-//            var events = _service.GetByOwnerId(101);
+            _context.EventAttendees.Add(new EventAttendee
+            {
+                ScoutEventId = e1.Id,
+                AttendeeId = _normalUser.Id
+            });
+            _context.SaveChanges();
 
-//            Assert.IsTrue(events.Count > 0);
-//        }
+            var result = _eventService.GetAll(_normalUser, StatusFilter.Attending, "", PriceFilter.All, -1, -1);
 
-//        [TestMethod]
-//        public void Add_AddsEvent()
-//        {
-//            _service = new EventService();
-//            var newEvent = CreateValidEvent();
+            var list = result as List<ScoutEventDTO>;
+            Assert.IsNotNull(list);
+            Assert.AreEqual(1, list.Count);
+            Assert.AreEqual("Attended Event", list[0].Name);
+        }
 
-//            var result = _service.Add(newEvent);
+        [TestMethod]
+        public void GetAll_FilterByNotAttending_ReturnsOnlyNonAttendedEvents()
+        {
+            var e1 = SeedEvent("Attended Event");
+            SeedEvent("Not Attended Event");
 
-//            Assert.IsTrue(result.Id > 0);
-//        }
+            _context.EventAttendees.Add(new EventAttendee
+            {
+                ScoutEventId = e1.Id,
+                AttendeeId = _normalUser.Id
+            });
+            _context.SaveChanges();
 
-//        [TestMethod]
-//        public void Remove_ReturnsTrue_WhenExists()
-//        {
-//            _service = new EventService();
+            var result = _eventService.GetAll(_normalUser, StatusFilter.NotAttending, "", PriceFilter.All, -1, -1);
 
-//            var all = _service.GetAll(_user, StatusFilter.All, "", PriceFilter.All, -1, -1) as List<ScoutEvent>;
-//            var knownId = all.First().Id;
+            var list = result as List<ScoutEventDTO>;
+            Assert.IsNotNull(list);
+            Assert.AreEqual(1, list.Count);
+            Assert.AreEqual("Not Attended Event", list[0].Name);
+        }
 
-//            var result = _service.Remove(knownId);
+        [TestMethod]
+        public void GetAll_FilterByLocation_ReturnsMatchingEvents()
+        {
+            SeedEvent("Cluj Event");
+            var e2 = new ScoutEvent
+            {
+                Name = "Brasov Event",
+                Location = "Brasov",
+                Description = "Description long enough for validation",
+                StartDate = DateTime.UtcNow.AddDays(5),
+                EndDate = DateTime.UtcNow.AddDays(6),
+                Price = 0,
+                RegistrationDeadline = DateTime.UtcNow.AddDays(3),
+                CreatorId = 1
+            };
+            _context.Events.Add(e2);
+            _context.SaveChanges();
 
-//            Assert.IsTrue(result);
-//        }
+            var result = _eventService.GetAll(_adminUser, StatusFilter.All, "Brasov", PriceFilter.All, -1, -1);
 
-//        [TestMethod]
-//        public void Remove_ReturnsFalse_WhenNotExists()
-//        {
-//            _service = new EventService();
-//            var result = _service.Remove(999);
+            var list = result as List<ScoutEventDTO>;
+            Assert.IsNotNull(list);
+            Assert.AreEqual(1, list.Count);
+            Assert.AreEqual("Brasov Event", list[0].Name);
+        }
 
-//            Assert.IsFalse(result);
-//        }
+        [TestMethod]
+        public void GetAll_FilterByFreePrice_ReturnsOnlyFreeEvents()
+        {
+            SeedEvent("Free Event", price: 0);
+            SeedEvent("Paid Event", price: 50);
 
-//        [TestMethod]
-//        public void Update_ReturnsTrue_WhenExists()
-//        {
-//            _service = new EventService();
-//            var newData = CreateValidEvent();
+            var result = _eventService.GetAll(_adminUser, StatusFilter.All, "", PriceFilter.Free, -1, -1);
 
-//            var all = _service.GetAll(_user, StatusFilter.All, "", PriceFilter.All, -1, -1) as List<ScoutEvent>;
-//            var knownId = all.First().Id;
+            var list = result as List<ScoutEventDTO>;
+            Assert.IsNotNull(list);
+            Assert.AreEqual(1, list.Count);
+            Assert.AreEqual("Free Event", list[0].Name);
+        }
 
-//            var result = _service.Update(knownId, newData);
+        [TestMethod]
+        public void GetAll_WithPagination_ReturnsPaginatedResult()
+        {
+            SeedEvent("Event 1");
+            SeedEvent("Event 2");
+            SeedEvent("Event 3");
 
-//            Assert.IsTrue(result);
-//        }
+            var result = _eventService.GetAll(_adminUser, StatusFilter.All, "", PriceFilter.All, 1, 2);
 
-//        [TestMethod]
-//        public void Update_ReturnsFalse_WhenNotExists()
-//        {
-//            _service = new EventService();
-//            var result = _service.Update(999, CreateValidEvent());
+            Assert.IsNotNull(result);
+            var type = result.GetType();
+            var items = type.GetProperty("Items")?.GetValue(result) as List<ScoutEventDTO>;
+            var totalCount = (int)(type.GetProperty("TotalCount")?.GetValue(result) ?? 0);
 
-//            Assert.IsFalse(result);
-//        }
+            Assert.AreEqual(3, totalCount);
+            Assert.AreEqual(2, items?.Count);
+        }
 
-//        [TestMethod]
-//        public void ToggleAttendance_AddsUser()
-//        {
-//            _service = new EventService();
-//            var user = new User { Id = 999 };
 
-//            var all = _service.GetAll(_user, StatusFilter.All, "", PriceFilter.All, -1, -1) as List<ScoutEvent>;
-//            var knownId = all.First().Id;
+        [TestMethod]
+        public void GetById_ExistingId_ReturnsEvent()
+        {
+            var seeded = SeedEvent("Find Me");
 
-//            var result = _service.ToggleAttendance(knownId, user);
+            var result = _eventService.GetById(seeded.Id);
 
-//            Assert.IsTrue(result);
-//        }
+            Assert.IsNotNull(result);
+            Assert.AreEqual("Find Me", result.Name);
+        }
 
-//        [TestMethod]
-//        public void ToggleAttendance_RemovesUser()
-//        {
-//            _service = new EventService();
-//            var user = new User { Id = 201 }; // already attending
+        [TestMethod]
+        public void GetById_NonExistingId_ReturnsNull()
+        {
+            var result = _eventService.GetById(9999);
 
-//            var all = _service.GetAll(_user, StatusFilter.All, "", PriceFilter.All, -1, -1) as List<ScoutEvent>;
-//            var knownId = all.First().Id;
+            Assert.IsNull(result);
+        }
 
-//            var result = _service.ToggleAttendance(knownId, user);
 
-//            Assert.IsTrue(result);
-//        }
+        [TestMethod]
+        public void GetByOwnerId_ReturnsOnlyOwnerEvents()
+        {
+            SeedEvent("Admin Event", creatorId: _adminUser.Id);
+            SeedEvent("User Event", creatorId: _normalUser.Id);
 
-//        [TestMethod]
-//        public void ToggleAttendance_ReturnsFalse_WhenEventNotFound()
-//        {
-//            _service = new EventService();
-//            var result = _service.ToggleAttendance(999, _user);
+            var result = _eventService.GetByOwnerId(_adminUser.Id);
 
-//            Assert.IsFalse(result);
-//        }
+            Assert.AreEqual(1, result.Count);
+            Assert.AreEqual("Admin Event", result[0].Name);
+        }
 
-//        [TestMethod]
-//        public void ToggleAttendance_ReturnsFalse_WhenUserNull()
-//        {
-//            _service = new EventService();
-//            var result = _service.ToggleAttendance(1, null);
 
-//            Assert.IsFalse(result);
-//        }
+        [TestMethod]
+        public void Add_ValidEvent_SavesAndReturnsDto()
+        {
+            var dto = ValidEventDto("Brand New Event");
 
-//        [TestMethod]
-//        public void Filter_ByStatus_Attending()
-//        {
-//            _service = new EventService();
-//            var result = _service.GetAll(_user, StatusFilter.Attending, "", PriceFilter.All, -1, -1);
+            var result = _eventService.Add(_adminUser, dto);
 
-//            Assert.IsNotNull(result);
-//        }
+            Assert.IsNotNull(result);
+            Assert.AreEqual("Brand New Event", result.Name);
+            Assert.AreEqual(1, _context.Events.Count());
+        }
 
-//        [TestMethod]
-//        public void Filter_ByStatus_NotAttending()
-//        {
-//            _service = new EventService();
-//            var result = _service.GetAll(_user, StatusFilter.NotAttending, "", PriceFilter.All, -1, -1);
+        [TestMethod]
+        [ExpectedException(typeof(Exception))]
+        public void Add_InvalidName_ThrowsException()
+        {
+            var dto = ValidEventDto("");
+            _eventService.Add(_adminUser, dto);
+        }
 
-//            Assert.IsNotNull(result);
-//        }
 
-//        [TestMethod]
-//        public void Filter_ByLocation()
-//        {
-//            _service = new EventService();
-//            var result = _service.GetAll(_user, StatusFilter.All, "Pine Valley Woods", PriceFilter.All, -1, -1);
+        [TestMethod]
+        public void Remove_ExistingEvent_ReturnsTrueAndDeletes()
+        {
+            var seeded = SeedEvent();
 
-//            Assert.IsNotNull(result);
-//        }
+            var result = _eventService.Remove(seeded.Id);
 
-//        [TestMethod]
-//        public void Filter_ByPrice_Free()
-//        {
-//            _service = new EventService();
-//            var freeEvent = CreateValidEvent();
-//            freeEvent.Price = 0;
+            Assert.IsTrue(result);
+            Assert.AreEqual(0, _context.Events.Count());
+        }
 
-//            _service.Add(freeEvent);
+        [TestMethod]
+        public void Remove_NonExistingEvent_ReturnsFalse()
+        {
+            var result = _eventService.Remove(9999);
 
-//            var result = _service.GetAll(_user, StatusFilter.All, "", PriceFilter.Free, -1, -1);
+            Assert.IsFalse(result);
+        }
 
-//            Assert.IsNotNull(result);
-//        }
-//    }
-//}
+
+        [TestMethod]
+        public void Update_ExistingEvent_UpdatesAndReturnsTrue()
+        {
+            var seeded = SeedEvent("Old Name");
+            var dto = ValidEventDto("Updated Name");
+
+            var result = _eventService.Update(seeded.Id, dto);
+
+            Assert.IsTrue(result);
+            var updated = _context.Events.Find(seeded.Id);
+            Assert.AreEqual("Updated Name", updated?.Name);
+        }
+
+        [TestMethod]
+        public void Update_NonExistingEvent_ReturnsFalse()
+        {
+            var dto = ValidEventDto();
+
+            var result = _eventService.Update(9999, dto);
+
+            Assert.IsFalse(result);
+        }
+
+
+        [TestMethod]
+        public void ToggleAttendance_NotAttending_AddsAttendee()
+        {
+            var seeded = SeedEvent();
+
+            _eventService.ToggleAttendance(seeded.Id, _normalUser);
+
+            var attending = _context.EventAttendees
+                .Any(ea => ea.ScoutEventId == seeded.Id && ea.AttendeeId == _normalUser.Id);
+            Assert.IsTrue(attending);
+        }
+
+        [TestMethod]
+        public void ToggleAttendance_AlreadyAttending_RemovesAttendee()
+        {
+            var seeded = SeedEvent();
+            _context.EventAttendees.Add(new EventAttendee
+            {
+                ScoutEventId = seeded.Id,
+                AttendeeId = _normalUser.Id
+            });
+            _context.SaveChanges();
+
+            _eventService.ToggleAttendance(seeded.Id, _normalUser);
+
+            var attending = _context.EventAttendees
+                .Any(ea => ea.ScoutEventId == seeded.Id && ea.AttendeeId == _normalUser.Id);
+            Assert.IsFalse(attending);
+        }
+
+        [TestMethod]
+        public void GetUniqueLocations_ReturnsDistinctSortedLocations()
+        {
+            SeedEvent("E1"); // Location: Bucharest
+            SeedEvent("E2"); // Location: Bucharest (duplicate)
+            var e3 = new ScoutEvent
+            {
+                Name = "E3",
+                Location = "Alba",
+                Description = "Desc",
+                StartDate = DateTime.UtcNow.AddDays(1),
+                EndDate = DateTime.UtcNow.AddDays(2),
+                Price = 0,
+                RegistrationDeadline = DateTime.UtcNow.AddDays(1),
+                CreatorId = 1
+            };
+            _context.Events.Add(e3);
+            _context.SaveChanges();
+
+            var result = _eventService.GetUniqueLocations();
+
+            Assert.AreEqual(2, result.Count);
+            Assert.AreEqual("Alba", result[0]);      // sorted alphabetically
+            Assert.AreEqual("Bucharest", result[1]);
+        }
+    }
+}
