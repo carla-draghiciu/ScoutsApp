@@ -4,6 +4,7 @@ import { RouterLink } from '@angular/router';
 import { EventModel, EventService } from '../../services/event';
 import { OnInit } from '@angular/core';
 import { ChangeDetectorRef } from '@angular/core';
+import { PermissionService } from '../../services/permission';
 
 
 @Component({
@@ -17,6 +18,7 @@ export class MyEvents implements OnInit {
   page = 1;
   pageSize = 6;
   userId = Number(localStorage.getItem('userId'));
+  isAdmin: boolean = false;
 
   isAttending(event: EventModel): boolean {
     return event?.attendees?.some(a => a.attendeeId === this.userId) ?? false;
@@ -24,10 +26,12 @@ export class MyEvents implements OnInit {
 
   constructor(
     private service: EventService,
-    private cdr: ChangeDetectorRef) {
+    private cdr: ChangeDetectorRef,
+    private permissionService: PermissionService) {
   }
 
   ngOnInit() {
+    this.isAdmin = this.permissionService.isAdmin();
     this.service.getByCreatorId(this.userId).subscribe(usersEvents => {
       this.events = usersEvents;
       this.cdr.detectChanges();

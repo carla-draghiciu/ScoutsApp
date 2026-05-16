@@ -2,12 +2,15 @@ import { Component, AfterViewInit } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { EventService } from '../../services/event';
 import { Chart, registerables } from 'chart.js';
+import { PermissionService } from '../../services/permission';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 
 Chart.register(...registerables);
 
 @Component({
   selector: 'app-statistics',
-  imports: [RouterLink],
+  imports: [RouterLink, CommonModule, FormsModule],
   templateUrl: './statistics.html',
   styleUrl: './statistics.css',
 })
@@ -16,12 +19,14 @@ export class Statistics implements AfterViewInit {
   totalAttendees = 0;
   avgAttendees = 0;
   totalRevenue = 0;
+  isAdmin: boolean = false;
 
   chart1: any;
   chart2: any;
   chart3: any;
 
-  constructor(private service: EventService) {
+  constructor(private service: EventService, private permissionService: PermissionService) {
+    this.isAdmin = this.permissionService.isAdmin();
     // const events = this.service.getAll();
     this.service.getAll('all', '', 'all', -1, -1).subscribe(events => {
       this.totalEvents = events.length;

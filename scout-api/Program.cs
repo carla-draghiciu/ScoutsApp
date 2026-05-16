@@ -6,6 +6,7 @@ using scout_api.Middleware;
 using scout_api.Services;
 
 var builder = WebApplication.CreateBuilder(args);
+var url = "http://192.168.3.7:4200";
 
 // Add services to the container.
 
@@ -29,7 +30,7 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAngular", policy =>
-        policy.WithOrigins("http://localhost:4200", "http://172.20.10.3:4200")
+        policy.WithOrigins("http://localhost:4200", "http://172.20.10.3:4200", url)
               .AllowAnyHeader()
               .AllowAnyMethod()
               .AllowCredentials()); // for SignalR

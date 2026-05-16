@@ -10,6 +10,7 @@
     <button routerLink="/badges" class="current-btn">Badges</button>
     <button routerLink="/statistics" class="header-btns">Statistics</button>
     <button routerLink="/editprofile" class="header-btns">Profile</button>
+    <button *ngIf="isAdmin" routerLink="/admin/observation" class="header-btns">Observations</button>
   </div>
 </header>
 

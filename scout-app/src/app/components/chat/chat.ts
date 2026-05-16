@@ -9,6 +9,7 @@ import { HttpClient } from '@angular/common/http';
 import { AuthService } from '../../services/auth';
 import { environment } from '../../../environments/environment';
 import { NgZone } from '@angular/core';
+import { PermissionService } from '../../services/permission';
 
 export interface PastChat {
   id: string | undefined;
@@ -33,6 +34,7 @@ export class Chat implements OnInit, OnDestroy {
   connectionStarted = false;
 
   env = environment.apiUrl;
+  isAdmin: boolean = false;
   
   currentUser = {
     id: Number(localStorage.getItem('userId')),
@@ -48,10 +50,12 @@ export class Chat implements OnInit, OnDestroy {
     private chatService: ChatService, 
     private route: ActivatedRoute, 
     private userService: AuthService,
-    private ngZone: NgZone
+    private ngZone: NgZone,
+    private permissionService: PermissionService
   ) { }
 
   async ngOnInit() {
+    this.isAdmin = this.permissionService.isAdmin();
     this.subscribeToChat();
     await this.chatService.startConnection();
     this.connectionStarted = true;

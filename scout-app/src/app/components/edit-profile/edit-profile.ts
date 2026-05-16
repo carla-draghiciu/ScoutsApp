@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { AuthService } from '../../services/auth';
+import { PermissionService } from '../../services/permission';
 
 @Component({
   selector: 'app-edit-profile',
@@ -12,7 +13,10 @@ import { AuthService } from '../../services/auth';
   styleUrl: './edit-profile.css',
 })
 export class EditProfile {
-  constructor(private router: Router, private authService: AuthService) {}
+  isAdmin: boolean = false;
+  constructor(private router: Router, private authService: AuthService, private permissionService: PermissionService) {
+    this.isAdmin = this.permissionService.isAdmin();
+  }
 
   logout() {
     const token = localStorage.getItem('token');

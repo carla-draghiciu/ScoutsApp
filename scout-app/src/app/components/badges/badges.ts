@@ -13,8 +13,10 @@ import { FormsModule } from '@angular/forms';
 })
 export class Badges {
   canManageBadges: boolean = false;
+  isAdmin: boolean = false;
   
   constructor(private permissionService: PermissionService) { 
     this.canManageBadges = this.permissionService.hasPermission('manage_badges');
+    this.isAdmin = this.permissionService.isAdmin();
   }
 }
