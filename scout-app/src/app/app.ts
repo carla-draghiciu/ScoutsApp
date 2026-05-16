@@ -1,6 +1,7 @@
-import { Component, signal } from '@angular/core';
+import { Component, OnInit, signal } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { CookieService } from 'ngx-cookie-service';
+import { InactivityService } from './services/inactivity.service';
 
 @Component({
   selector: 'app-root',
@@ -9,6 +10,12 @@ import { CookieService } from 'ngx-cookie-service';
   styleUrl: './app.css',
   providers: [CookieService],
 })
-export class App {
+export class App implements OnInit {
   protected readonly title = signal('scout-app');
+
+  constructor(private inactivityService: InactivityService) {}
+
+  ngOnInit(): void {
+    this.inactivityService.startTracking();
+  }
 }
