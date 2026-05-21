@@ -2,7 +2,7 @@ import { Injectable, NgZone, OnDestroy } from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthService } from './auth';
 
-const INACTIVITY_LIMIT_MS = 60 * 1000; // 30 minutes
+const INACTIVITY_LIMIT_MS = 60 * 1000;
 
 const ACTIVITY_EVENTS = [
   'mousemove',

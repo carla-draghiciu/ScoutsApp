@@ -13,7 +13,7 @@ app-root {
 body {
   margin: 0;
   font-family: 'Inter', sans-serif;
-  /* background-color: #E5E0D8; */
+  background-color: #E5E0D8;
   color: #725C3A;
-  background-image: linear-gradient(to bottom right, #fcf7f0, #E5E0D8);
+  /* background-image: linear-gradient(to bottom right, #fcf7f0, #E5E0D8); */
 }

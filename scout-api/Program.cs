@@ -6,11 +6,15 @@ using scout_api.Middleware;
 using scout_api.Services;
 
 var builder = WebApplication.CreateBuilder(args);
-var url = "http://192.168.3.7:4200";
+var url = "http://172.20.10.3:4200";
 
 // Add services to the container.
 
-builder.Services.AddControllers();
+builder.Services.AddControllers().AddJsonOptions(options =>
+{
+    options.JsonSerializerOptions.ReferenceHandler =
+        System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles;
+}); ;
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
