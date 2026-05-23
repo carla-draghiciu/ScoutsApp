@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using scout_api.Enums;
-using scout_api.Models;
 using scout_api.Services;
 using scout_api.DTOs;
 
@@ -9,26 +8,23 @@ namespace scout_api.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class EventsController : Controller
+    public class EventsController : BaseController
     {
         private readonly EventService eventService;
-        private readonly UserService userService;
 
-        public EventsController(EventService eventService, UserService userService)
+        public EventsController(EventService eventService, UserService userService) : base(userService)
         {
             this.eventService = eventService;
-            this.userService = userService;
         }
 
         [HttpGet]
         public IActionResult GetAll(string statusFilter = "AllEvents", string locationFilter = "", string priceFilter = "AllPrices", int pageNumber = 1, int pageSize = 6)
         {
-            var token = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
-            var currentUser = userService.GetUserByToken(token);
+            var response = CheckPermission("view_events");
 
-            if (currentUser == null)
+            if (response != null)
             {
-                return Unauthorized("User must be registered to see events");
+                return response;
             }
 
             if (!Enum.TryParse<StatusFilter>(statusFilter, true, out var status))
@@ -42,6 +38,7 @@ namespace scout_api.Controllers
             }
 
             // 200 response
+            var currentUser = GetCurrentUser()!;
             return Ok(eventService.GetAll(currentUser, status, locationFilter, price, pageNumber, pageSize));
         }
 
@@ -49,7 +46,15 @@ namespace scout_api.Controllers
         [ActionName("GetById")]
         public IActionResult GetById(int eventId)
         {
+            var response = CheckPermission("view_events");
+
+            if (response != null)
+            {
+                return response;
+            }
+
             var foundEvent = eventService.GetById(eventId);
+
             if (foundEvent == null)
             {
                 return NotFound();
@@ -62,6 +67,13 @@ namespace scout_api.Controllers
         [HttpGet("byUser/{userId}")]
         public IActionResult GetByUserId(int userId)
         {
+            var response = CheckPermission("view_events");
+
+            if (response != null)
+            {
+                return response;
+            }
+
             List<ScoutEventDTO> foundEvents = eventService.GetByOwnerId(userId);
 
             return Ok(foundEvents);
@@ -70,40 +82,46 @@ namespace scout_api.Controllers
         [HttpPost]
         public IActionResult Create(CreateScoutEventDTO eventToBeCreated)
         {
-            var token = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
-            var currentUser = userService.GetUserByToken(token);
+            var response = CheckPermission("create_event");
 
-            try
+            if (response != null)
             {
-                if (currentUser == null)
-                {
-                    return Unauthorized("User must be registered to create events");
-                }
-
-                var createdEvent = eventService.Add(currentUser, eventToBeCreated);
-
-                // 201 response
-                return CreatedAtAction(
-                    nameof(GetById),                    // 1. which action can fetch the new resource
-                    new { eventId = createdEvent.Id },  // 2. the route parameter for that action
-                    createdEvent                        // 3. the body of the response (the new event as JSON)
-                );
+                return response;
             }
-            catch (Exception ex)
-            {
-                return Conflict(ex.InnerException?.Message ?? ex.Message);
-            }
+
+            var currentUser = GetCurrentUser()!;
+            var createdEvent = eventService.Add(currentUser, eventToBeCreated);
+            // 201 response
+            return CreatedAtAction(
+                nameof(GetById),                    // 1. which action can fetch the new resource
+                new { eventId = createdEvent.Id },  // 2. the route parameter for that action
+                createdEvent                        // 3. the body of the response (the new event as JSON)
+            );
         }
 
         [HttpPut("{idOfEventToUpdate}")]
         public IActionResult Update(int idOfEventToUpdate, CreateScoutEventDTO newEvent)
         {
+            var response = CheckPermission("update_event");
+
+            if (response != null)
+            {
+                return response;
+            }
+
             return eventService.Update(idOfEventToUpdate, newEvent) ? NoContent() : NotFound();
         }
 
         [HttpDelete("{idOfEventToDelete}")]
         public IActionResult Delete(int idOfEventToDelete)
         {
+            var response = CheckPermission("delete_event");
+
+            if (response != null)
+            {
+                return response;
+            }
+
             return eventService.Remove(idOfEventToDelete) ? NoContent() : NotFound();
         }
 
@@ -116,13 +134,14 @@ namespace scout_api.Controllers
         [HttpPut("attendance/{eventId}")]
         public IActionResult ToggleAttendance(int eventId)
         {
-            var token = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
-            var currentUser = userService.GetUserByToken(token);
+            var response = CheckPermission("join_event");
 
-            Console.WriteLine($"User is {currentUser}");
-            Console.WriteLine($"Token is {token}");
-            Console.WriteLine($"Event is {eventId}");
+            if (response != null)
+            {
+                return response;
+            }
 
+            var currentUser = GetCurrentUser()!;
             return eventService.ToggleAttendance(eventId, currentUser) ? NoContent() : NotFound();
         }
     }
