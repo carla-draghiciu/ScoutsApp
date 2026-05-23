@@ -98,7 +98,7 @@ namespace scout_api.tests
 
         private LoginDTO LoginDtoFor(string email, string password = "Password123!") => new LoginDTO
         {
-            Email = email,
+            Identifier = email,
             Password = password
         };
 

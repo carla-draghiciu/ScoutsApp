@@ -90,7 +90,7 @@ namespace scout_api.Services
                 .Include(u => u.Role)
                     .ThenInclude(r => r.RolePermissions)
                         .ThenInclude(rp => rp.Permission)
-                .FirstOrDefault(u => u.Email == logingUser.Email);
+                .FirstOrDefault(u => u.Email == logingUser.Identifier || u.ScoutId == logingUser.Identifier || u.Name == logingUser.Identifier);
             if (user == null)
             {
                 return null;

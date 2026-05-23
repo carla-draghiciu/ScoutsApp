@@ -21,7 +21,7 @@ export class Login {
 
   submit() {
     const loggingUser: LoggingUser = {
-      email: this.email,
+      identifier: this.email,
       password: this.password
     };
 

@@ -6,7 +6,6 @@ using scout_api.Middleware;
 using scout_api.Services;
 
 var builder = WebApplication.CreateBuilder(args);
-var url = "https://192.168.100.30:4200";
 
 // Add services to the container.
 
@@ -39,7 +38,8 @@ builder.Services.AddCors(options =>
             "https://localhost:4200",
             "http://172.20.10.3:4200",
             "https://172.20.10.3:4200",
-            url
+            "http://192.168.100.30:4200",
+            "https://192.168.100.30:4200"
         )
         .AllowAnyHeader()
         .AllowAnyMethod()
