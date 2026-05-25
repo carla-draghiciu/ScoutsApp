@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using scout_api.Enums;
 using scout_api.DTOs;
 using scout_api.Repositories;
+using scout_api.Services;
 
 namespace scout_api.Controllers
 {
@@ -10,9 +11,9 @@ namespace scout_api.Controllers
     [Route("api/[controller]")]
     public class EventsController : BaseController
     {
-        private readonly EventRepository eventService;
+        private readonly EventService eventService;
 
-        public EventsController(EventRepository eventService, UserRepository userService) : base(userService)
+        public EventsController(EventService eventService, UserService userService) : base(userService)
         {
             this.eventService = eventService;
         }
@@ -39,7 +40,7 @@ namespace scout_api.Controllers
 
             // 200 response
             var currentUser = GetCurrentUser()!;
-            return Ok(eventService.GetAll(currentUser, status, locationFilter, price, pageNumber, pageSize));
+            return Ok(eventService.GetAllWithFilters(currentUser, status, locationFilter, price, pageNumber, pageSize));
         }
 
         [HttpGet("{eventId}")]

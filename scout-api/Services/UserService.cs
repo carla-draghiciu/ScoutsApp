@@ -1,5 +1,6 @@
 ﻿using scout_api.DTOs;
 using scout_api.Enums;
+using scout_api.Mappers;
 using scout_api.Models;
 using scout_api.Repositories;
 using scout_api.Validators;
@@ -50,17 +51,7 @@ namespace scout_api.Services
 
             ValidateRegisteringUser(registeringUser);
 
-            // TODO: create a mapper
-            User registered = new User
-            {
-                Name = registeringUser.Name,
-                Email = registeringUser.Email,
-                ScoutId = registeringUser.ScoutId,
-                DateOfBirth = DateTime.Parse(registeringUser.DateOfBirth),
-                ScoutLevel = level,
-                Password = BCrypt.Net.BCrypt.HashPassword(registeringUser.Password),
-                RoleId = 2
-            };
+            User registered = registeringUser.FromDto(level);
 
             return userRepository.AddUser(registered);
         }

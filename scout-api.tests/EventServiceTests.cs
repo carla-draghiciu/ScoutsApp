@@ -105,7 +105,7 @@ namespace scout_api.tests
             SeedEvent("Event 1");
             SeedEvent("Event 2");
 
-            var result = _eventService.GetAll(_adminUser, StatusFilter.All, "", PriceFilter.All, -1, -1);
+            var result = _eventService.GetAllWithFilters(_adminUser, StatusFilter.All, "", PriceFilter.All, -1, -1);
 
             var list = result as List<ScoutEventDTO>;
             Assert.IsNotNull(list);
@@ -125,7 +125,7 @@ namespace scout_api.tests
             });
             _context.SaveChanges();
 
-            var result = _eventService.GetAll(_normalUser, StatusFilter.Attending, "", PriceFilter.All, -1, -1);
+            var result = _eventService.GetAllWithFilters(_normalUser, StatusFilter.Attending, "", PriceFilter.All, -1, -1);
 
             var list = result as List<ScoutEventDTO>;
             Assert.IsNotNull(list);
@@ -146,7 +146,7 @@ namespace scout_api.tests
             });
             _context.SaveChanges();
 
-            var result = _eventService.GetAll(_normalUser, StatusFilter.NotAttending, "", PriceFilter.All, -1, -1);
+            var result = _eventService.GetAllWithFilters(_normalUser, StatusFilter.NotAttending, "", PriceFilter.All, -1, -1);
 
             var list = result as List<ScoutEventDTO>;
             Assert.IsNotNull(list);
@@ -172,7 +172,7 @@ namespace scout_api.tests
             _context.Events.Add(e2);
             _context.SaveChanges();
 
-            var result = _eventService.GetAll(_adminUser, StatusFilter.All, "Brasov", PriceFilter.All, -1, -1);
+            var result = _eventService.GetAllWithFilters(_adminUser, StatusFilter.All, "Brasov", PriceFilter.All, -1, -1);
 
             var list = result as List<ScoutEventDTO>;
             Assert.IsNotNull(list);
@@ -186,7 +186,7 @@ namespace scout_api.tests
             SeedEvent("Free Event", price: 0);
             SeedEvent("Paid Event", price: 50);
 
-            var result = _eventService.GetAll(_adminUser, StatusFilter.All, "", PriceFilter.Free, -1, -1);
+            var result = _eventService.GetAllWithFilters(_adminUser, StatusFilter.All, "", PriceFilter.Free, -1, -1);
 
             var list = result as List<ScoutEventDTO>;
             Assert.IsNotNull(list);
@@ -201,7 +201,7 @@ namespace scout_api.tests
             SeedEvent("Event 2");
             SeedEvent("Event 3");
 
-            var result = _eventService.GetAll(_adminUser, StatusFilter.All, "", PriceFilter.All, 1, 2);
+            var result = _eventService.GetAllWithFilters(_adminUser, StatusFilter.All, "", PriceFilter.All, 1, 2);
 
             Assert.IsNotNull(result);
             var type = result.GetType();

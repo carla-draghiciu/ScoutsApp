@@ -1,14 +1,15 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using scout_api.Models;
 using scout_api.Repositories;
+using scout_api.Services;
 
 namespace scout_api.Controllers
 {
     public class BaseController : ControllerBase
     {
-        protected readonly UserRepository userService;
+        protected readonly UserService userService;
 
-        public BaseController(UserRepository userService)
+        public BaseController(UserService userService)
         {
             this.userService = userService;
         }

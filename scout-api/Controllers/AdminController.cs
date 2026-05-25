@@ -11,7 +11,7 @@ namespace scout_api.Controllers
         private readonly LoggingService _loggingService;
         private readonly SessionRepository _sessionService;
 
-        public AdminController(LoggingService loggingService, SessionRepository sessionService, UserRepository userService) : base(userService)
+        public AdminController(LoggingService loggingService, SessionRepository sessionService, UserService userService) : base(userService)
         {
             _loggingService = loggingService;
             _sessionService = sessionService;

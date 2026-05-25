@@ -21,6 +21,7 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddSingleton<SessionRepository>();
 builder.Services.AddScoped<EventRepository>();
+builder.Services.AddScoped<EventService>();
 builder.Services.AddScoped<UserRepository>();
 builder.Services.AddScoped<UserService>();
 builder.Services.AddScoped<LoggingService>();

@@ -5,30 +5,45 @@ namespace scout_api.Mappers
 {
     public static class EventMapperExtensions
     {
-        public static ScoutEventDTO ToDto(this ScoutEvent e)
+        public static ScoutEventDTO ToDto(this ScoutEvent scoutEvent)
         {
             return new ScoutEventDTO
             {
-                Id = e.Id,
-                Name = e.Name,
-                Location = e.Location,
-                Description = e.Description,
-                StartDate = e.StartDate,
-                EndDate = e.EndDate,
-                Price = e.Price,
-                RegistrationDeadline = e.RegistrationDeadline,
-                Equipment = e.Equipment,
-                CreatorId = e.CreatorId,
-                CreatorName = e.Creator?.Name,
-                BadgeId = e.BadgeId,
-
-                Attendees = e.Attendees?
-                    .Select(a => new EventAttendeeDTO
+                Id = scoutEvent.Id,
+                Name = scoutEvent.Name,
+                Location = scoutEvent.Location,
+                Description = scoutEvent.Description,
+                StartDate = scoutEvent.StartDate,
+                EndDate = scoutEvent.EndDate,
+                Price = scoutEvent.Price,
+                RegistrationDeadline = scoutEvent.RegistrationDeadline,
+                Equipment = scoutEvent.Equipment,
+                CreatorId = scoutEvent.CreatorId,
+                CreatorName = scoutEvent.Creator?.Name,
+                BadgeId = scoutEvent.BadgeId,
+                Attendees = scoutEvent.Attendees?
+                    .Select(attendee => new EventAttendeeDTO
                     {
-                        AttendeeId = a.AttendeeId,
-                        AttendeeName = a.Attendee?.Name
+                        AttendeeId = attendee.AttendeeId,
+                        AttendeeName = attendee.Attendee?.Name
                     })
                     .ToList() ?? new List<EventAttendeeDTO>()
+            };
+        }
+
+        public static ScoutEvent FromDTO(this CreateScoutEventDTO scoutEventDTO, User currentUser)
+        {
+            return new ScoutEvent
+            {
+                Name = scoutEventDTO.Name,
+                Location = scoutEventDTO.Location,
+                Description = scoutEventDTO.Description,
+                StartDate = scoutEventDTO.StartDate,
+                EndDate = scoutEventDTO.EndDate,
+                Price = scoutEventDTO.Price,
+                RegistrationDeadline = scoutEventDTO.RegistrationDeadline,
+                Equipment = scoutEventDTO.Equipment,
+                CreatorId = currentUser.Id
             };
         }
     }
