@@ -34,9 +34,9 @@ export interface EventModel {
 })
 export class EventService {
   env = environment.apiUrl;
-  // private apiUrl = "https://localhost:7239/api/Events";
+  
   private apiUrl = `${this.env}/api/Events`;
-  // headers = new HttpHeaders({ Authorization: `Bearer ${localStorage.getItem('token')}` });
+  
   private getHeaders(): HttpHeaders {
     return new HttpHeaders({ Authorization: `Bearer ${localStorage.getItem('token')}` });
   }
