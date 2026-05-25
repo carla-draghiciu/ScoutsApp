@@ -1,8 +1,8 @@
 ﻿using scout_api.Models;
 
-namespace scout_api.Services
+namespace scout_api.Repositories
 {
-    public class SessionService
+    public class SessionRepository
     {
         public Dictionary<string, User> Sessions { get; } = new();
     }

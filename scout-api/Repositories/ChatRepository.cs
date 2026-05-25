@@ -2,13 +2,13 @@
 using MongoDB.Driver;
 using scout_api.Models;
 
-namespace scout_api.Services
+namespace scout_api.Repositories
 {
-    public class ChatService
+    public class ChatRepository
     {
         private readonly IMongoCollection<ChatMessage> messages;
 
-        public ChatService(IConfiguration configuration)
+        public ChatRepository(IConfiguration configuration)
         {
             var client = new MongoClient(configuration["MongoDB:ConnectionString"]);
             var database = client.GetDatabase(configuration["MongoDB:DatabaseName"]);

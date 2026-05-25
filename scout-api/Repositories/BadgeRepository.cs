@@ -1,13 +1,13 @@
 ﻿using scout_api.Models;
 
-namespace scout_api.Services
+namespace scout_api.Repositories
 {
-    public class BadgeService
+    public class BadgeRepository
     {
         private static int nextAvailableId = 1;
         private readonly List<Badge> badges = new();
 
-        public BadgeService() 
+        public BadgeRepository() 
         {
             PopulateBadges();
         }

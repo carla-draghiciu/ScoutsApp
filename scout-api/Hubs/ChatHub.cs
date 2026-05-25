@@ -1,14 +1,14 @@
 ﻿using Microsoft.AspNetCore.SignalR;
 using scout_api.Models;
-using scout_api.Services;
+using scout_api.Repositories;
 
 namespace scout_api.Hubs
 {
     public class ChatHub : Hub
     {
-        private readonly ChatService chatService;
+        private readonly ChatRepository chatService;
 
-        public ChatHub(ChatService chatService)
+        public ChatHub(ChatRepository chatService)
         {
             this.chatService = chatService;
         }

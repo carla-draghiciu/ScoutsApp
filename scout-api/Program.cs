@@ -3,6 +3,7 @@ using scout_api;
 using scout_api.Controllers;
 using scout_api.Hubs;
 using scout_api.Middleware;
+using scout_api.Repositories;
 using scout_api.Services;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -18,11 +19,12 @@ builder.Services.AddControllers().AddJsonOptions(options =>
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-builder.Services.AddSingleton<SessionService>();
-builder.Services.AddScoped<EventService>();
+builder.Services.AddSingleton<SessionRepository>();
+builder.Services.AddScoped<EventRepository>();
+builder.Services.AddScoped<UserRepository>();
 builder.Services.AddScoped<UserService>();
 builder.Services.AddScoped<LoggingService>();
-builder.Services.AddSingleton<ChatService>();
+builder.Services.AddSingleton<ChatRepository>();
 builder.Services.AddSignalR();
 
 builder.Services.AddDbContext<AppDbContext>(options =>

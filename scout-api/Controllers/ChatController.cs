@@ -1,5 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using scout_api.Services;
+using scout_api.Repositories;
 
 namespace scout_api.Controllers
 {
@@ -7,9 +7,9 @@ namespace scout_api.Controllers
     [Route("api/[controller]")]
     public class ChatController : Controller
     {
-        private readonly ChatService chatService;
+        private readonly ChatRepository chatService;
 
-        public ChatController(ChatService chatService)
+        public ChatController(ChatRepository chatService)
         {
             this.chatService = chatService;
         }

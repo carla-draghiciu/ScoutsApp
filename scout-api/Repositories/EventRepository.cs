@@ -7,13 +7,13 @@ using scout_api.Validators;
 using System.Xml.Linq;
 using scout_api.DTOs;
 
-namespace scout_api.Services
+namespace scout_api.Repositories
 {
-    public class EventService
+    public class EventRepository
     {
         private readonly AppDbContext _context;
 
-        public EventService(AppDbContext context)
+        public EventRepository(AppDbContext context)
         {
             _context = context;
         }

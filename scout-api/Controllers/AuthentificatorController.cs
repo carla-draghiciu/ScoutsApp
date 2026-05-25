@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using scout_api.DTOs;
+using scout_api.Repositories;
 using scout_api.Services;
 
 namespace scout_api.Controllers

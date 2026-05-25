@@ -1,5 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using scout_api.Services;
+using scout_api.Repositories;
 
 namespace scout_api.Controllers
 {
@@ -7,7 +7,7 @@ namespace scout_api.Controllers
     [Route("api/[controller]")]
     public class BadgesController : Controller
     {
-        private readonly BadgeService badgeService;
+        private readonly BadgeRepository badgeService;
         //public IActionResult Index()
         //{
         //    return View();

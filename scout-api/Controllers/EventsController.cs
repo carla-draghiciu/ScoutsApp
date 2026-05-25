@@ -1,8 +1,8 @@
 ﻿using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using scout_api.Enums;
-using scout_api.Services;
 using scout_api.DTOs;
+using scout_api.Repositories;
 
 namespace scout_api.Controllers
 {
@@ -10,9 +10,9 @@ namespace scout_api.Controllers
     [Route("api/[controller]")]
     public class EventsController : BaseController
     {
-        private readonly EventService eventService;
+        private readonly EventRepository eventService;
 
-        public EventsController(EventService eventService, UserService userService) : base(userService)
+        public EventsController(EventRepository eventService, UserRepository userService) : base(userService)
         {
             this.eventService = eventService;
         }

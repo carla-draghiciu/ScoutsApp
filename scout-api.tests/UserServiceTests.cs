@@ -2,8 +2,7 @@
 using scout_api.DTOs;
 using scout_api.Enums;
 using scout_api.Models;
-using scout_api.Services;
-using scout_api.Services;
+using scout_api.Repositories;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,8 +16,8 @@ namespace scout_api.tests
     {
 
         private AppDbContext _context;
-        private UserService _userService;
-        private SessionService _sessionService;
+        private UserRepository _userService;
+        private SessionRepository _sessionService;
 
         [TestInitialize]
         public void Setup()
@@ -28,8 +27,8 @@ namespace scout_api.tests
                 .Options;
 
             _context = new AppDbContext(options);
-            _sessionService = new SessionService();
-            _userService = new UserService(_context, _sessionService);
+            _sessionService = new SessionRepository();
+            _userService = new UserRepository(_context, _sessionService);
 
             var adminRole = new Role { Id = 1, Name = "Admin" };
             var userRole = new Role { Id = 2, Name = "User" };

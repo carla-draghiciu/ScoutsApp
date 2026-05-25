@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using scout_api.Repositories;
 using scout_api.Services;
 
 namespace scout_api.Controllers
@@ -8,9 +9,9 @@ namespace scout_api.Controllers
     public class AdminController : BaseController
     {
         private readonly LoggingService _loggingService;
-        private readonly SessionService _sessionService;
+        private readonly SessionRepository _sessionService;
 
-        public AdminController(LoggingService loggingService, SessionService sessionService, UserService userService) : base(userService)
+        public AdminController(LoggingService loggingService, SessionRepository sessionService, UserRepository userService) : base(userService)
         {
             _loggingService = loggingService;
             _sessionService = sessionService;

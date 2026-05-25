@@ -1,70 +1,58 @@
-﻿using Microsoft.EntityFrameworkCore;
-using scout_api.DTOs;
+﻿using scout_api.DTOs;
 using scout_api.Enums;
-using scout_api.Mappers;
 using scout_api.Models;
+using scout_api.Repositories;
 using scout_api.Validators;
 
 namespace scout_api.Services
 {
     public class UserService
     {
-        private readonly AppDbContext _context;
-        private readonly SessionService sessionService;
+        private readonly UserRepository userRepository;
 
-        public UserService(AppDbContext context, SessionService sessionService)
+        public UserService(UserRepository userRepository)
         {
-            _context = context;
-            this.sessionService = sessionService;
-        }
-
-        public int GetSeshCount()
-        {
-            return this.sessionService.Sessions.Count;
-        }
-
-        public List<User> GetAll()
-        {
-            return _context.Users
-                .Include(u => u.EarnedBadges)
-                .ToList();
+            this.userRepository = userRepository;
         }
 
         public Dictionary<string, User> GetAllLoggedIn()
         {
-            return this.sessionService.Sessions;
+            return userRepository.GetAllLoggedIn();
         }
 
-        public User? FindUserByEmail(string email)
+        public List<User> GetAll()
         {
-            return _context.Users
-                .FirstOrDefault(u => u.Email == email);
+            return userRepository.GetAll();
         }
 
-        private void ValidateRegisteringUser(RegisterDTO registeringUser)
+        public UserDTO? GetUserById(int userId)
         {
-            UserValidator.ValidateName(registeringUser.Name);
-            UserValidator.ValidateEmail(registeringUser.Email);
-            UserValidator.ValidateDateOfBirth(DateTime.Parse(registeringUser.DateOfBirth));
-            UserValidator.ValidatePassword(registeringUser.Password);
+            return userRepository.GetUserById(userId);
+        }
+
+        public User? GetUserByToken(string token)
+        {
+            return userRepository.GetUserByToken(token);
         }
 
         public User? Register(RegisterDTO registeringUser)
         {
-            User? user = FindUserByEmail(registeringUser.Email);
+            User? user = userRepository.FindUserByEmail(registeringUser.Email);
             if (user != null)
             {
                 return null;
             }
 
             if (!Enum.TryParse<ScoutLevel>(registeringUser.ScoutLevel, true, out var level))
-                return null; // invalid value sent
+            {
+                return null; // invalid value sent for enum
+            }
 
             ValidateRegisteringUser(registeringUser);
 
+            // TODO: create a mapper
             User registered = new User
             {
-                //Id = nextAvailableId++,
                 Name = registeringUser.Name,
                 Email = registeringUser.Email,
                 ScoutId = registeringUser.ScoutId,
@@ -74,23 +62,13 @@ namespace scout_api.Services
                 RoleId = 2
             };
 
-            _context.Users.Add(registered);
-            _context.SaveChanges();
-            return registered;
-        }
-
-        private bool PasswordMatches(string accountPassword, string enteredPassword)
-        {
-            return BCrypt.Net.BCrypt.Verify(enteredPassword, accountPassword);
+            return userRepository.AddUser(registered);
         }
 
         public (User user, string token, string role, List<string> permissions)? Login(LoginDTO logingUser)
         {
-            User? user = _context.Users
-                .Include(u => u.Role)
-                    .ThenInclude(r => r.RolePermissions)
-                        .ThenInclude(rp => rp.Permission)
-                .FirstOrDefault(u => u.Email == logingUser.Identifier || u.ScoutId == logingUser.Identifier || u.Name == logingUser.Identifier);
+            User? user = userRepository.GetUserByIdentifier(logingUser.Identifier);
+            
             if (user == null)
             {
                 return null;
@@ -101,33 +79,25 @@ namespace scout_api.Services
                 return null;
             }
 
-            var token = Guid.NewGuid().ToString();
-            this.sessionService.Sessions[token] = user;
-
-            var permissions = user.Role.RolePermissions
-                .Select(rp => rp.Permission.Name)
-                .ToList();
-
-            return (user, token, user.Role.Name, permissions);
+            return userRepository.Login(user);
         }
 
         public void Logout(string token)
         {
-            this.sessionService.Sessions.Remove(token);
+            userRepository.Logout(token);
         }
 
-        public User? GetUserByToken(string token)
+        private void ValidateRegisteringUser(RegisterDTO registeringUser)
         {
-            this.sessionService.Sessions.TryGetValue(token, out User? user);
-            return user;
+            UserValidator.ValidateName(registeringUser.Name);
+            UserValidator.ValidateEmail(registeringUser.Email);
+            UserValidator.ValidateDateOfBirth(DateTime.Parse(registeringUser.DateOfBirth));
+            UserValidator.ValidatePassword(registeringUser.Password);
         }
 
-        public UserDTO? GetUserById(int id)
+        private bool PasswordMatches(string accountPassword, string enteredPassword)
         {
-            return _context.Users
-                .Include(u => u.EarnedBadges)
-                .FirstOrDefault(u => u.Id == id)
-                .ToDto();
+            return BCrypt.Net.BCrypt.Verify(enteredPassword, accountPassword);
         }
     }
 }
