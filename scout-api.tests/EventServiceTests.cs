@@ -4,6 +4,7 @@ using scout_api.DTOs;
 using scout_api.Enums;
 using scout_api.Models;
 using scout_api.Repositories;
+using scout_api.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,7 +17,7 @@ namespace scout_api.tests
     public sealed class EventServiceTests
     {
         private AppDbContext _context;
-        private EventRepository _eventService;
+        private EventService _eventService;
         private User _adminUser;
         private User _normalUser;
 
@@ -28,7 +29,7 @@ namespace scout_api.tests
                 .Options;
 
             _context = new AppDbContext(options);
-            _eventService = new EventRepository(_context);
+            _eventService = new EventService(new EventRepository(_context));
 
             var adminRole = new Role { Id = 1, Name = "Admin" };
             var userRole = new Role { Id = 2, Name = "User" };

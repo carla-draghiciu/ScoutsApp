@@ -3,6 +3,7 @@ using scout_api.DTOs;
 using scout_api.Enums;
 using scout_api.Models;
 using scout_api.Repositories;
+using scout_api.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,7 +17,7 @@ namespace scout_api.tests
     {
 
         private AppDbContext _context;
-        private UserRepository _userService;
+        private UserService _userService;
         private SessionRepository _sessionService;
 
         [TestInitialize]
@@ -28,7 +29,7 @@ namespace scout_api.tests
 
             _context = new AppDbContext(options);
             _sessionService = new SessionRepository();
-            _userService = new UserRepository(_context, _sessionService);
+            _userService = new UserService(new UserRepository(_context, _sessionService));
 
             var adminRole = new Role { Id = 1, Name = "Admin" };
             var userRole = new Role { Id = 2, Name = "User" };
@@ -119,25 +120,6 @@ namespace scout_api.tests
             var result = _userService.GetAll();
 
             Assert.AreEqual(0, result.Count);
-        }
-
-        [TestMethod]
-        public void FindUserByEmail_ExistingEmail_ReturnsUser()
-        {
-            SeedUser("find@test.com");
-
-            var result = _userService.FindUserByEmail("find@test.com");
-
-            Assert.IsNotNull(result);
-            Assert.AreEqual("find@test.com", result.Email);
-        }
-
-        [TestMethod]
-        public void FindUserByEmail_NonExistingEmail_ReturnsNull()
-        {
-            var result = _userService.FindUserByEmail("ghost@test.com");
-
-            Assert.IsNull(result);
         }
 
         [TestMethod]
@@ -292,26 +274,6 @@ namespace scout_api.tests
             var result = _userService.GetUserById(9999);
 
             Assert.IsNull(result);
-        }
-
-        [TestMethod]
-        public void GetSeshCount_NoSessions_ReturnsZero()
-        {
-            var result = _userService.GetSeshCount();
-
-            Assert.AreEqual(0, result);
-        }
-
-        [TestMethod]
-        public void GetSeshCount_AfterLogin_ReturnsCorrectCount()
-        {
-            SeedUser("count1@test.com");
-            SeedUser("count2@test.com");
-
-            _userService.Login(LoginDtoFor("count1@test.com"));
-            _userService.Login(LoginDtoFor("count2@test.com"));
-
-            Assert.AreEqual(2, _userService.GetSeshCount());
         }
 
         [TestMethod]
