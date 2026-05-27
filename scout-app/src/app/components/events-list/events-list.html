@@ -38,6 +38,8 @@
   </button>
 </section>
 
+<div *ngIf="isLoading" class="loading-events">Loading events...</div>
+
 <main id="main" class="grid">
   <div class="card" *ngFor="let event of paginatedEvents" [routerLink]="['/events', event.id]"
     [class.active]="isAttending(event)">

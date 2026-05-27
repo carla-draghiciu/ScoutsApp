@@ -108,6 +108,12 @@
   -webkit-backdrop-filter: blur(6px); */
 }
 
+.loading-events {
+  width: 10%;
+  height: 10%;
+  margin: auto;
+}
+
 .current-btn {
   background: rgba(255,255,255,0.35);
   border: none;

@@ -49,14 +49,19 @@ export class EventsList implements OnInit {
   ) {}
 
   loadEvents() {
+    this.isLoading = true;
     this.service.getAll(this.filterStatus, this.filterLocation, this.filterPrice, this.pageNumber, this.pageSize).subscribe(
       {
         next: (response: any) => {
+          this.isLoading = false;
           this.events = response.items;
           this.eventsCount = response.totalCount;
           this.cdr.detectChanges();
         },
-        error: err => console.error('Failed to load events:', err)
+        error: err => {
+          console.error('Failed to load events:', err);
+          this.isLoading = false;
+        }
       }
     );
   }
