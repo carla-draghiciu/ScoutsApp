@@ -5,7 +5,6 @@ import { EventDetail } from './components/event-detail/event-detail';
 import { CreateEventForm } from './components/create-event-form/create-event-form';
 import { Register } from './components/register/register';
 import { Login } from './components/login/login';
-import { Profile } from './components/profile/profile';
 import { Badges } from './components/badges/badges';
 import { Statistics } from './components/statistics/statistics';
 import { EditEvent } from './components/edit-event/edit-event';
@@ -19,7 +18,6 @@ export const routes: Routes = [
   { path: '', component: Home },
   { path: 'register', component: Register },
   { path: 'login', component: Login },
-  { path: 'profile', component: Profile },
   { path: 'badges', component: Badges },
   { path: 'statistics', component: Statistics },
   { path: 'events', component: EventsList },

@@ -14,7 +14,11 @@ import { PermissionService } from '../../services/permission';
 })
 export class EditProfile {
   isAdmin: boolean = false;
-  constructor(private router: Router, private authService: AuthService, private permissionService: PermissionService) {
+  constructor(
+    private router: Router, 
+    private authService: AuthService, 
+    private permissionService: PermissionService
+  ) {
     this.isAdmin = this.permissionService.isAdmin();
   }
 

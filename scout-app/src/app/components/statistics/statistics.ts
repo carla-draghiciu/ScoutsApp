@@ -25,19 +25,18 @@ export class Statistics implements AfterViewInit {
   chart2: any;
   chart3: any;
 
-  constructor(private service: EventService, private permissionService: PermissionService) {
+  constructor(
+    private service: EventService, 
+    private permissionService: PermissionService
+  ) {
     this.isAdmin = this.permissionService.isAdmin();
-    // const events = this.service.getAll();
+    
     this.service.getAll('all', '', 'all', -1, -1).subscribe(events => {
       this.totalEvents = events.length;
       this.totalAttendees = events.reduce((sum, e) => sum + (e.attendees ? e.attendees.length : 0), 0);
       this.avgAttendees = this.totalEvents > 0 ? Number((this.totalAttendees / this.totalEvents).toFixed(1)) : 0;
       this.totalRevenue = events.reduce((sum, e) => sum + (e.price * (e.attendees ? e.attendees.length : 0)), 0);
     });
-    // this.totalEvents = events.length;
-    // this.totalAttendees = events.reduce((sum, e) => sum + (e.attendees ? e.attendees.length : 0), 0);
-    // this.avgAttendees = this.totalEvents > 0 ? Number((this.totalAttendees / this.totalEvents).toFixed(1)) : 0;
-    // this.totalRevenue = events.reduce((sum, e) => sum + (e.price * (e.attendees ? e.attendees.length : 0)), 0);
   }
 
   // first load html charts, then run this code

@@ -1,11 +1,11 @@
 import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { EventModel, EventService } from '../../services/event';
+import { EventService } from '../../services/event';
 import { OnInit } from '@angular/core';
 import { ChangeDetectorRef } from '@angular/core';
 import { PermissionService } from '../../services/permission';
-
+import { EventModel } from '../../models/event.model';
 
 @Component({
   selector: 'app-my-events',
@@ -27,15 +27,14 @@ export class MyEvents implements OnInit {
   constructor(
     private service: EventService,
     private cdr: ChangeDetectorRef,
-    private permissionService: PermissionService) {
-  }
+    private permissionService: PermissionService
+  ) {}
 
   ngOnInit() {
     this.isAdmin = this.permissionService.isAdmin();
     this.service.getByCreatorId(this.userId).subscribe(usersEvents => {
       this.events = usersEvents;
       this.cdr.detectChanges();
-      console.log('MyEvents ngOnInit: fetched events=', this.events);
     })
   }
 

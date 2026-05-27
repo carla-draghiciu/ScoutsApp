@@ -4,8 +4,8 @@ import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { AuthService, LoggingUser } from '../../services/auth';
-
+import { AuthService } from '../../services/auth';
+import { LoggingUser } from '../../models/user.model';
 
 @Component({
   selector: 'app-login',
@@ -17,7 +17,10 @@ export class Login {
   email = '';
   password = '';
 
-  constructor(private router: Router, private authService: AuthService) {}
+  constructor(
+    private router: Router, 
+    private authService: AuthService
+  ) {}
 
   submit() {
     const loggingUser: LoggingUser = {

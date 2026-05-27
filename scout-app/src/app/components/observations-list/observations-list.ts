@@ -8,15 +8,6 @@ import { environment } from '../../../environments/environment';
 import { PermissionService } from '../../services/permission';
 import { RouterLink } from '@angular/router';
 
-interface ObservationEntry {
-  id: number;
-  userId: number;
-  user: { name: string; email: string };
-  reason: string;
-  flaggedAt: string;
-  isResolved: boolean;
-}
-
 @Component({
   selector: 'app-observations-list',
   imports: [CommonModule, FormsModule, RouterLink],
@@ -34,7 +25,11 @@ export class ObservationsList implements OnInit {
     return new HttpHeaders({ Authorization: `Bearer ${localStorage.getItem('token')}` });
   }
 
-  constructor(private http: HttpClient, private cdr: ChangeDetectorRef, private permissionService: PermissionService) {}
+  constructor(
+    private http: HttpClient, 
+    private cdr: ChangeDetectorRef, 
+    private permissionService: PermissionService
+  ) {}
 
   ngOnInit() {
     this.loadEntries();

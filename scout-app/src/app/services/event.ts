@@ -3,31 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { HttpHeaders } from '@angular/common/http';
 import { environment } from '../../environments/environment';
-
-export interface Badge {
-  id: number;
-  name: string;
-}
-
-export interface EventAttendee {
-  attendeeId: number;
-  attendeeName?: string;
-}
-
-export interface EventModel {
-  id: number;
-  name: string;
-  location: string;
-  startDate: string;
-  endDate: string;
-  price: number;
-  registrationDeadline: string; // yyyy-mm-dd
-  description: string;
-  equipment: string;
-  creatorId: number;
-  attendees: EventAttendee[];
-  badge: Badge;
-}
+import { EventModel } from '../models/event.model';
 
 @Injectable({
   providedIn: 'root',
@@ -73,5 +49,9 @@ export class EventService {
 
   toggleAttendance(eventId: number): Observable<void> {
     return this.http.put<void>(`${this.apiUrl}/attendance/${eventId}`, {}, { headers: this.getHeaders() });
+  }
+
+  search(query: string, pageNumber: number, pageSize: number): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}/search?query=${query}&pageNumber=${pageNumber}&pageSize=${pageSize}`, { headers: this.getHeaders() });
   }
 }

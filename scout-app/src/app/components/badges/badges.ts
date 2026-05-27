@@ -4,7 +4,6 @@ import { PermissionService } from '../../services/permission';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
-
 @Component({
   selector: 'app-badges',
   imports: [RouterLink, CommonModule, FormsModule],

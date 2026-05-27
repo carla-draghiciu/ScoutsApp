@@ -33,7 +33,7 @@ export class EditEvent implements OnInit {
     private service: EventService,
     private cdr: ChangeDetectorRef,
     private permissionService: PermissionService
-  ) { }
+  ) {}
 
   ngOnInit(): void {
     const idParam = this.route.snapshot.paramMap.get('id');

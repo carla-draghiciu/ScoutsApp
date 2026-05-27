@@ -34,7 +34,11 @@ export class CreateEventForm {
   errorMessage = '';
   canCreateEvent: boolean = false;
 
-  constructor(private service: EventService, private router: Router, private permissionService: PermissionService) { 
+  constructor(
+    private service: EventService, 
+    private router: Router, 
+    private permissionService: PermissionService
+  ) { 
     this.canCreateEvent = this.permissionService.hasPermission('create_event');
   }
 

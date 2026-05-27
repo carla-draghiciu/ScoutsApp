@@ -2,28 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
-
-export interface RegisteringUser {
-  name: string;
-  email: string;
-  scoutId: string;
-  password: string;
-  dateOfBirth: string;
-  scoutLevel: string;
-}
-
-export interface LoggingUser {
-  identifier: string;
-  password: string;
-}
-
-export interface UserProfile {
-  id: number;
-  name: string;
-  email: string;
-  dateOfBirth: string;
-  scoutLevel: string;
-}
+import { RegisteringUser, LoggingUser, UserProfile } from '../models/user.model';
 
 @Injectable({
   providedIn: 'root',

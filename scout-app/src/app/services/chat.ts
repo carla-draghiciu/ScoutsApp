@@ -2,15 +2,7 @@ import { Injectable } from '@angular/core';
 import * as signalR from '@microsoft/signalr';
 import { Subject } from 'rxjs';
 import { environment } from '../../environments/environment';
-
-export interface ChatMessage {
-  id: string;
-  roomId: string;
-  senderId: number;
-  senderName: string;
-  content: string;
-  timeStamp: string;
-}
+import { ChatMessage } from '../models/chat.model';
 
 @Injectable({
   providedIn: 'root',

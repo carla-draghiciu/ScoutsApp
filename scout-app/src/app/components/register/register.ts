@@ -1,10 +1,10 @@
 import { Component } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { AuthService, RegisteringUser } from '../../services/auth';
+import { AuthService } from '../../services/auth';
+import { RegisteringUser } from '../../models/user.model';
 
 @Component({
   selector: 'app-register',
@@ -21,7 +21,10 @@ export class Register {
   password = '';
   confirmPassword = '';
 
-  constructor(private router: Router, private authService: AuthService) {}
+  constructor(
+    private router: Router, 
+    private authService: AuthService
+  ) {}
 
   submit() {
     const registering: RegisteringUser = {
@@ -38,18 +41,16 @@ export class Register {
         this.router.navigate(['/login']);
       },
       error: err => {
-      console.log(err);
-      
-      if (typeof err.error === 'string') {
-        alert(err.error);
-      } else if (err.error?.title) {
-        alert(err.error.title);
-      } else if (err.error?.message) {
-        alert(err.error.message);
-      } else {
-        alert('Registration failed. Please try again.');
+        if (typeof err.error === 'string') {
+          alert(err.error);
+        } else if (err.error?.title) {
+          alert(err.error.title);
+        } else if (err.error?.message) {
+          alert(err.error.message);
+        } else {
+          alert('Registration failed. Please try again.');
+        }
       }
-    }
     });
   }
 }

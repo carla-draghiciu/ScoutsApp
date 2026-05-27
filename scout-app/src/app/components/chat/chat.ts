@@ -1,5 +1,5 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { ChatMessage, ChatService } from '../../services/chat';
+import { ChatService } from '../../services/chat';
 import { forkJoin, Subscription } from 'rxjs';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -10,6 +10,7 @@ import { AuthService } from '../../services/auth';
 import { environment } from '../../../environments/environment';
 import { NgZone } from '@angular/core';
 import { PermissionService } from '../../services/permission';
+import { ChatMessage } from '../../models/chat.model';
 
 export interface PastChat {
   id: string | undefined;
