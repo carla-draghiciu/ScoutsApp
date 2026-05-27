@@ -1,4 +1,5 @@
-﻿using scout_api.DTOs;
+﻿using Microsoft.EntityFrameworkCore;
+using scout_api.DTOs;
 using scout_api.Enums;
 using scout_api.Mappers;
 using scout_api.Models;
@@ -82,6 +83,12 @@ namespace scout_api.Services
             }
 
             return eventRepository.ToggleAttendance(eventId, currentUser);
+        }
+
+        public object Search(string query, int pageNumber, int pageSize)
+        {
+            query = query.ToLower();
+            return eventRepository.Search(query, pageNumber, pageSize);
         }
 
         private void ValidateEvent(ScoutEvent eventToValidate)

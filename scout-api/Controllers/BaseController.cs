@@ -30,11 +30,13 @@ namespace scout_api.Controllers
             var currentUser = GetCurrentUser();
             if (currentUser == null)
             {
+                Console.WriteLine($"--------------401-User is null");
                 return Unauthorized();
             }
 
             if (!HasPermission(currentUser, permission))
             {
+                Console.WriteLine($"--------------401-User is forbidden");
                 return Forbid();
             }
 

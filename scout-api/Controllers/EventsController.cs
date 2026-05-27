@@ -145,5 +145,15 @@ namespace scout_api.Controllers
             var currentUser = GetCurrentUser()!;
             return eventService.ToggleAttendance(eventId, currentUser) ? NoContent() : NotFound();
         }
+
+        [HttpGet("search")]
+        public IActionResult Search([FromQuery] string query, [FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 6)
+        {
+            var check = CheckPermission("view_events");
+            if (check != null) return check;
+
+            var results = eventService.Search(query, pageNumber, pageSize);
+            return Ok(results);
+        }
     }
 }

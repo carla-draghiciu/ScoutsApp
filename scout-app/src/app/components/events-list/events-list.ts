@@ -2,14 +2,13 @@ import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
-import { EventModel, EventService } from '../../services/event';
+import { EventService } from '../../services/event';
 import { CookieService } from '../../services/cookie.service';
-import type { Event } from '../../models/event.model';
-import { HttpClient } from '@angular/common/http';
-import { Router } from '@angular/router';
 import { OnInit } from '@angular/core';
 import { ChangeDetectorRef } from '@angular/core';
 import { PermissionService } from '../../services/permission';
+import { EventModel } from '../../models/event.model';
+import { debounceTime, distinctUntilChanged, Subject, switchMap } from 'rxjs';
 
 @Component({
   selector: 'app-events-list',
@@ -26,16 +25,17 @@ export class EventsList implements OnInit {
   prefetchedPage: EventModel[] = [];
   isLoading = false;
 
-
   canViewEvents: boolean = false;
   isAdmin: boolean = false;
-
 
   allLocations: string[] = [];
 
   filterStatus: 'all' | 'attending' | 'notAttending' = 'all';
   filterLocation: string = '';
   filterPrice: 'all' | 'free' = 'all';
+
+  searchQuery = '';
+  isSearching = false;
 
   isAttending(event: EventModel): boolean {
     return event.attendees?.some(a => a.attendeeId === this.userId) ?? false;
@@ -49,7 +49,6 @@ export class EventsList implements OnInit {
   ) {}
 
   loadEvents() {
-    console.log('user is', this.userId);
     this.service.getAll(this.filterStatus, this.filterLocation, this.filterPrice, this.pageNumber, this.pageSize).subscribe(
       {
         next: (response: any) => {
@@ -87,6 +86,31 @@ export class EventsList implements OnInit {
     return undefined;
   }
 
+  onSearchKeyDown(event: KeyboardEvent) {
+    if (event.key === 'Enter') {
+      console.log('Enter pressed. Search query:', this.searchQuery);
+      this.pageNumber = 1; // reset to first page on new search
+      this.performSearch();
+    }
+  }
+
+  performSearch() {
+    if (this.searchQuery.trim()) {
+      this.isSearching = true;
+      this.service.search(this.searchQuery, this.pageNumber, this.pageSize)
+        .subscribe((result: any) => {
+          console.log('Search results for query:', this.searchQuery, result);
+          this.events = result.items;
+          this.eventsCount = result.totalCount;
+          this.cdr.detectChanges();
+        });
+    } else {
+      console.log('Search query is empty. Reloading events.');
+      this.isSearching = false;
+      this.loadEvents(); // back to normal
+    }
+  }
+
   onFilterChange() {
     this.pageNumber = 1;
     this.cookie.set('filterLocation', this.filterLocation);
@@ -99,15 +123,22 @@ export class EventsList implements OnInit {
   }
 
   changePage(newPage: number): void {
-    console.log('Changing to page', newPage);
     this.pageNumber = newPage;
     this.service.getAll(this.filterStatus, this.filterLocation, this.filterPrice, this.pageNumber, this.pageSize).subscribe({
       next: (response: any) => {
-        console.log('Fetched page', newPage, 'response:', response);
         this.events = response.items;
         this.eventsCount = response.totalCount;
         this.cdr.detectChanges();
       },
     });
+  }
+
+  onPageChange(page: number) {
+    this.pageNumber = page;
+    if (this.isSearching) {
+      this.performSearch();
+    } else {
+      this.loadEvents();
+    }
   }
 }

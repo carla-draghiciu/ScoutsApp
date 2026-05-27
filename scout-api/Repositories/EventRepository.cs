@@ -110,6 +110,21 @@ namespace scout_api.Repositories
             return true;
         }
 
+        public object Search(string query, int pageNumber, int pageSize)
+        {
+            var filtered = databaseContext.Events
+                .Include(scoutEvent => scoutEvent.Attendees)
+                    .ThenInclude(scoutEvent => scoutEvent.Attendee)
+                .Include(scoutEvent => scoutEvent.Creator)
+                .Where(scoutEvent =>
+                    scoutEvent.Name.ToLower().Contains(query)
+                )
+                .Select(scoutEvent => scoutEvent.ToDto())
+                .ToList();
+
+            return GetPaginated(filtered, pageNumber, pageSize);
+        }
+
         private List<ScoutEventDTO> ApplyFilters(User currentUser, StatusFilter statusFilter, string locationFilter, PriceFilter priceFilter)
         {
             IQueryable<ScoutEvent> query = databaseContext.Events

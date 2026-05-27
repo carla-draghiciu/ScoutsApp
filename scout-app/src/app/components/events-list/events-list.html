@@ -15,7 +15,7 @@
 </header>
 
 <section class="toolbar">
-  <input type="text" placeholder="Search events..." />
+  <input [(ngModel)]="searchQuery" (keydown)="onSearchKeyDown($event)" type="text" placeholder="Search events..." />
 
   <select [(ngModel)]="filterStatus" (ngModelChange)="onFilterChange()">
     <option value="all">All Events</option>
