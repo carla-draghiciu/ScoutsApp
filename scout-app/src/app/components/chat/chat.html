@@ -21,6 +21,13 @@
       <h2>Conversations</h2>
     </div>
     <div class="chat-list">
+        <div *ngIf="!isLoadingChats && pastChats.length === 0" class="chat-list-empty">
+          No conversations yet.
+        </div>
+
+        <div *ngIf="isLoadingChats" class="chat-list-empty">
+          Loading Conversations...
+        </div>
       <div 
         *ngFor="let chat of pastChats" 
         class="chat-list-item" 
@@ -44,7 +51,7 @@
   </aside>
 
   <!-- Main Chat Area -->
-  <main class="chat-main">
+  <main *ngIf="pastChats.length > 0" class="chat-main">
     <div class="chat-header">
       <div class="chat-avatar">{{ organizerName.charAt(0) }}</div>
       <div class="chat-header-info">

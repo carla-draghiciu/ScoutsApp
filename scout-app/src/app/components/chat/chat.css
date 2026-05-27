@@ -90,6 +90,13 @@
   border: 1px solid rgba(255, 255, 255, 0.5);
 }
 
+.chat-list-empty {
+  padding: 1.5rem 1rem;
+  text-align: center;
+  color: #725C3A; /* or whatever your muted text variable is */
+  font-size: 14px;
+}
+
 /* Sidebar Styles */
 .chat-sidebar {
   width: 320px;

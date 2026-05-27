@@ -30,13 +30,15 @@ export class Chat implements OnInit, OnDestroy {
   messages: ChatMessage[] = [];
   newMessage = '';
   roomId = '';
-  organizerName = 'Organizer';
+  organizerName = '';
   organizerId?: string;
   connectionStarted = false;
 
   env = environment.apiUrl;
   isAdmin: boolean = false;
   
+  isLoadingChats = true;
+
   currentUser = {
     id: Number(localStorage.getItem('userId')),
     name: localStorage.getItem('userName') || 'Unknown User'
@@ -92,7 +94,11 @@ export class Chat implements OnInit, OnDestroy {
       this.http.get<ChatMessage[]>(`${this.env}/api/chat/conversations/${this.currentUser.id}`)
         .subscribe({
           next: conversations => {
-            if (!conversations.length) { resolve(); return; }
+            if (!conversations.length) { 
+              this.isLoadingChats = false;
+              resolve(); 
+              return; 
+            }
 
             const otherUserIds = conversations.map(msg =>
               msg.roomId
@@ -110,12 +116,19 @@ export class Chat implements OnInit, OnDestroy {
                 lastMessage: msg.content,
                 time: new Date(msg.timeStamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
                 unread: 0
-              }));
+              })).sort((a, b) =>
+                new Date(conversations[this.pastChats.indexOf(b)]?.timeStamp ?? 0).getTime() -
+                new Date(conversations[this.pastChats.indexOf(a)]?.timeStamp ?? 0).getTime()
+              );
+              this.isLoadingChats = false;
               this.cdr.detectChanges();
               resolve();
             });
           },
-          error: () => resolve() // don't block if it fails
+          error: () => {
+            this.isLoadingChats = false;
+            resolve() 
+          }// don't block if it fails
         });
     });
   }
