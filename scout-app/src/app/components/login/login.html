@@ -25,8 +25,9 @@
       <input type="password" [(ngModel)]="password" name="password" placeholder="Enter password" />
     </div>
 
-    <button (click)="submit()" type="button" class="submit-btn">
-      Sign In
+    <button (click)="submit()" type="button" class="submit-btn" [disabled]="isLoading">
+      <span *ngIf="isLoading">Signing in...</span>
+      <span *ngIf="!isLoading">Sign In</span>
     </button>
 
     <div>

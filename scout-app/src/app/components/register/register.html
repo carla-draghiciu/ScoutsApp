@@ -58,8 +58,9 @@
       <input [(ngModel)]="confirmPassword" name="confirmPassword" placeholder="Confirm password" />
     </div>
 
-    <button (click)="submit()" type="button" class="submit-btn">
-      Submit
+    <button (click)="submit()" type="button" class="submit-btn" [disabled]="isLoading">
+      <span *ngIf="isLoading">Creating...</span>
+      <span *ngIf="!isLoading">Register</span>
     </button>
 
     <div>

@@ -16,6 +16,7 @@ import { LoggingUser } from '../../models/user.model';
 export class Login {
   email = '';
   password = '';
+  isLoading = false;
 
   constructor(
     private router: Router, 
@@ -28,6 +29,7 @@ export class Login {
       password: this.password
     };
 
+    this.isLoading = true;
     this.authService.login(loggingUser).subscribe({
       next: (response: any) => {
         localStorage.setItem('token', response.token);
@@ -36,9 +38,11 @@ export class Login {
         localStorage.setItem('role', response.role);
         localStorage.setItem('permissions', JSON.stringify(response.permissions));
         this.router.navigate(['/events']);
+        this.isLoading = false;
       },
       error: err => {
-        alert('Login failed: ' + (err.error || 'Unknown error')); 
+        alert('Login failed: ' + (err.error || 'Unknown error'));
+        this.isLoading = false;
       }
     });
   }

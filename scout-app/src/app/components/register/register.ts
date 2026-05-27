@@ -20,6 +20,7 @@ export class Register {
   scoutLevel = 'Lupisor';
   password = '';
   confirmPassword = '';
+  isLoading = false;
 
   constructor(
     private router: Router, 
@@ -36,11 +37,14 @@ export class Register {
       password: this.password
     };
 
+    this.isLoading = true;
     this.authService.register(registering).subscribe({
       next: () => {
         this.router.navigate(['/login']);
+        this.isLoading = false;
       },
       error: err => {
+        this.isLoading = false;
         if (typeof err.error === 'string') {
           alert(err.error);
         } else if (err.error?.title) {
