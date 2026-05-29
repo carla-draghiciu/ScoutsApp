@@ -17,3 +17,48 @@ body {
   color: #725C3A;
   /* background-image: linear-gradient(to bottom right, #fcf7f0, #E5E0D8); */
 }
+
+@media (max-width: 768px) {
+  .header, .navbar {
+    padding: 0 10px !important;
+    height: 50px !important;
+  }
+
+  .logo-bar {
+    font-size: 0 !important; /* Hides "BePrepared" text node */
+    gap: 0 !important;
+  }
+
+  .logo {
+    height: 40px !important;
+  }
+
+  .header-right {
+    max-width: calc(100% - 50px) !important;
+    overflow-x: auto !important;
+    flex-wrap: nowrap !important;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none !important;
+    -ms-overflow-style: none !important;
+    gap: 6px !important;
+    padding-bottom: 0 !important;
+    align-items: center !important;
+  }
+
+  .header-right::-webkit-scrollbar {
+    display: none !important;
+  }
+
+  .header-btns, .current-btn, .nav-btn {
+    padding: 6px 10px !important;
+    font-size: 11px !important;
+    border-radius: 12px !important;
+    flex-shrink: 0 !important;
+    height: auto !important;
+  }
+
+  /* Reduce margin-top of main content to match shorter header */
+  .main, .admin-panel, .main-container, .chat-layout {
+    margin-top: 60px !important;
+  }
+}

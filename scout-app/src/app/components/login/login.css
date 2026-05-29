@@ -127,3 +127,21 @@ select {
   color: #6C9053;
   cursor: pointer;
 }
+
+@media (max-width: 768px) {
+  .container {
+    width: 92vw !important;
+    padding: 15px 15px 30px 15px !important;
+    margin-bottom: 15vh !important;
+    margin-top: 2vh !important;
+  }
+
+  .back {
+    margin-top: 3vh !important;
+    margin-left: 4vw !important;
+  }
+
+  input, .submit-btn {
+    width: 100% !important;
+  }
+}

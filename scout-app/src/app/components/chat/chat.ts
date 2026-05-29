@@ -33,9 +33,11 @@ export class Chat implements OnInit, OnDestroy {
   organizerName = '';
   organizerId?: string;
   connectionStarted = false;
+  showSidebarOnMobile = true;
 
   env = environment.apiUrl;
   isAdmin: boolean = false;
+
   
   isLoadingChats = true;
 
@@ -155,6 +157,8 @@ export class Chat implements OnInit, OnDestroy {
           unread: 0
         });
       }
+      this.showSidebarOnMobile = false;
+      this.cdr.detectChanges();
     } else if (this.pastChats.length > 0) {
       this.organizerId = this.pastChats[0].id;
       this.organizerName = this.pastChats[0].name;
@@ -176,6 +180,9 @@ export class Chat implements OnInit, OnDestroy {
   }
 
   async selectChat(chat: PastChat) {
+    this.showSidebarOnMobile = false;
+    this.cdr.detectChanges();
+
     if (this.organizerId === chat.id) return; // already in this chat
 
     this.organizerId = chat.id;
@@ -192,6 +199,11 @@ export class Chat implements OnInit, OnDestroy {
     this.roomId = `chat_${ids[0]}_${ids[1]}`;
 
     await this.chatService.joinRoom(this.roomId);
+  }
+
+  goBackToConversations() {
+    this.showSidebarOnMobile = true;
+    this.cdr.detectChanges();
   }
 
   async send() {

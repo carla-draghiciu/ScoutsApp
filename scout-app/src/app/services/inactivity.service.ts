@@ -2,7 +2,7 @@ import { Injectable, NgZone, OnDestroy } from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthService } from './auth';
 
-const INACTIVITY_LIMIT_MS = 60 * 1000;
+const INACTIVITY_LIMIT_MS = 30 * 60 * 1000;
 
 const ACTIVITY_EVENTS = [
   'mousemove',
@@ -26,9 +26,7 @@ export class InactivityService implements OnDestroy {
     private ngZone: NgZone
   ) {}
 
-  /** Call once (from App component) to start tracking. */
   startTracking(): void {
-    // Run event listeners outside Angular's change-detection zone for performance.
     this.ngZone.runOutsideAngular(() => {
       ACTIVITY_EVENTS.forEach((event) =>
         window.addEventListener(event, this.boundReset, { passive: true })
@@ -47,15 +45,13 @@ export class InactivityService implements OnDestroy {
   private handleInactivity(): void {
     const token = localStorage.getItem('token');
     if (!token) {
-      // User is already logged out — nothing to do.
       return;
     }
 
-    // Re-enter Angular zone so navigation + change detection work correctly.
     this.ngZone.run(() => {
       this.authService.logout().subscribe({
         complete: () => this.clearSessionAndRedirect(),
-        error: () => this.clearSessionAndRedirect(), // redirect even if the API call fails
+        error: () => this.clearSessionAndRedirect(),
       });
     });
   }

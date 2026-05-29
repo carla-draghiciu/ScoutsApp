@@ -377,7 +377,11 @@ body {
 }
 
 
-@media (max-width: 640px) {
+@media (max-width: 768px) {
+  .main-container {
+    margin: 70px 3vw !important;
+  }
+
   .card-body {
     grid-template-columns: 1fr;
   }
@@ -388,20 +392,43 @@ body {
   }
 
   .card-header {
-    padding: 24px 20px 20px;
+    padding: 20px 15px 15px;
+  }
+
+  .card-header-top {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .event-title {
+    font-size: 1.5rem;
   }
 
   .card-col {
-    padding: 24px 20px;
+    padding: 20px 15px;
+  }
+
+  .creator-part {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+    width: 100%;
+  }
+
+  .chat-btn {
+    width: 100%;
+    text-align: center;
   }
 
   .card-footer {
-    padding: 16px 20px;
+    padding: 16px 15px;
     flex-direction: column;
     align-items: flex-start;
+    gap: 12px;
   }
 
   nav {
     padding: 0 16px;
   }
-}
+}

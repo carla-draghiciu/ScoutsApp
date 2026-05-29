@@ -14,7 +14,7 @@
   </div>
 </header>
 
-<div class="chat-layout">
+<div class="chat-layout" [class.show-sidebar-mobile]="showSidebarOnMobile">
   <!-- Sidebar for Past Chats -->
   <aside class="chat-sidebar">
     <div class="sidebar-header">
@@ -53,6 +53,9 @@
   <!-- Main Chat Area -->
   <main *ngIf="pastChats.length > 0" class="chat-main">
     <div class="chat-header">
+      <button class="chat-back-btn" (click)="goBackToConversations()">
+        <span class="material-symbols-outlined">arrow_back</span>
+      </button>
       <div class="chat-avatar">{{ organizerName.charAt(0) }}</div>
       <div class="chat-header-info">
         <h3>{{ organizerName }}</h3>

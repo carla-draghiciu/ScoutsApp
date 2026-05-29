@@ -374,3 +374,75 @@
 .chat-list::-webkit-scrollbar-thumb:hover {
   background-color: rgba(114, 92, 58, 0.4);
 }
+
+.chat-back-btn {
+  display: none;
+  background: none;
+  border: none;
+  color: #725C3A;
+  cursor: pointer;
+  padding: 8px;
+  margin-right: 8px;
+  border-radius: 50%;
+  transition: background-color 0.2s;
+  align-items: center;
+  justify-content: center;
+}
+
+.chat-back-btn:hover {
+  background-color: rgba(114, 92, 58, 0.1);
+}
+
+.chat-back-btn span {
+  font-size: 20px;
+}
+
+@media (max-width: 768px) {
+  .chat-layout {
+    height: calc(100vh - 60px) !important;
+    margin: 50px 0 0 0 !important;
+    border-radius: 0 !important;
+    border: none !important;
+  }
+
+  .chat-back-btn {
+    display: inline-flex !important;
+  }
+
+  /* When show-sidebar-mobile class is active, show sidebar, hide chat main */
+  .chat-layout.show-sidebar-mobile .chat-sidebar {
+    display: flex !important;
+    width: 100% !important;
+  }
+
+  .chat-layout.show-sidebar-mobile .chat-main {
+    display: none !important;
+  }
+
+  /* When show-sidebar-mobile class is false, hide sidebar, show chat main */
+  .chat-layout:not(.show-sidebar-mobile) .chat-sidebar {
+    display: none !important;
+  }
+
+  .chat-layout:not(.show-sidebar-mobile) .chat-main {
+    display: flex !important;
+    width: 100% !important;
+  }
+
+  .chat-header {
+    padding: 12px 16px !important;
+  }
+
+  .messages-area {
+    padding: 16px !important;
+  }
+
+  .message-content {
+    max-width: 85% !important;
+  }
+
+  .input-area {
+    padding: 12px 16px !important;
+  }
+}
+

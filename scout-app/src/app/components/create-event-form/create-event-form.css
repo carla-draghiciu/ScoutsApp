@@ -193,3 +193,16 @@ textarea {
 .submit-btn:active {
   transform: scale(0.97);
 }
+
+@media (max-width: 768px) {
+  .main-container {
+    margin: 70px 3vw !important;
+  }
+  .container {
+    padding: 15px !important;
+  }
+  .form-row {
+    flex-direction: column !important;
+    gap: 10px !important;
+  }
+}
