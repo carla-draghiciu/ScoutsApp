@@ -5,6 +5,7 @@ import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { AuthService } from '../../services/auth';
 import { RegisteringUser } from '../../models/user.model';
+import { ChangeDetectorRef } from '@angular/core';
 
 @Component({
   selector: 'app-register',
@@ -24,7 +25,8 @@ export class Register {
 
   constructor(
     private router: Router, 
-    private authService: AuthService
+    private authService: AuthService,
+    private cdr: ChangeDetectorRef
   ) {}
 
   submit() {
@@ -42,9 +44,11 @@ export class Register {
       next: () => {
         this.router.navigate(['/login']);
         this.isLoading = false;
+        this.cdr.detectChanges();
       },
       error: err => {
         this.isLoading = false;
+        this.cdr.detectChanges();
         if (typeof err.error === 'string') {
           alert(err.error);
         } else if (err.error?.title) {

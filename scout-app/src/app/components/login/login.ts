@@ -6,6 +6,7 @@ import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { AuthService } from '../../services/auth';
 import { LoggingUser } from '../../models/user.model';
+import { ChangeDetectorRef } from '@angular/core';
 
 @Component({
   selector: 'app-login',
@@ -20,7 +21,8 @@ export class Login {
 
   constructor(
     private router: Router, 
-    private authService: AuthService
+    private authService: AuthService,
+    private cdr: ChangeDetectorRef
   ) {}
 
   submit() {
@@ -39,10 +41,12 @@ export class Login {
         localStorage.setItem('permissions', JSON.stringify(response.permissions));
         this.router.navigate(['/events']);
         this.isLoading = false;
+        this.cdr.detectChanges();
       },
       error: err => {
-        alert('Login failed: ' + (err.error || 'Unknown error'));
         this.isLoading = false;
+        this.cdr.detectChanges();
+        alert('Login failed: ' + (err.error || 'Unknown error'));
       }
     });
   }
