@@ -84,14 +84,14 @@
   </div>
 </main>
 
-<div *ngIf="lastViewedEvent" style="padding: 1rem 5%; margin-bottom: -1rem;">
+<!-- <div *ngIf="lastViewedEvent" style="padding: 1rem 5%; margin-bottom: -1rem;">
   <h3 style="color: #6C9053; margin-bottom: 5px; font-size: 16px;">Last Viewed Event</h3>
   <a [routerLink]="['/events', lastViewedEvent.id]"
     style="color: inherit; text-decoration: none; display: flex; align-items: center; gap: 10px; background: white; padding: 10px 15px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); width: max-content; font-size: 14px; font-weight: 500;">
     <span class="material-symbols-outlined icon" style="font-size: 18px; color: #6C9053;">visibility</span>
     <span>{{ lastViewedEvent.name }} - {{ lastViewedEvent.location }}</span>
   </a>
-</div>
+</div> -->
 
 <div class="pagination">
   <button (click)="changePage(pageNumber - 1)" [disabled]="pageNumber === 1">Prev</button>
