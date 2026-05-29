@@ -21,7 +21,7 @@ namespace scout_api.Services
             return userRepository.GetAllLoggedIn();
         }
 
-        public List<User> GetAll()
+        public List<UserDTO?> GetAll()
         {
             return userRepository.GetAll();
         }

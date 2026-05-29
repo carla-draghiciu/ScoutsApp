@@ -8,10 +8,12 @@ import { AuthService } from '../../services/auth';
 import { PermissionService } from '../../services/permission';
 import { EventModel } from '../../models/event.model';
 import { UserProfile } from '../../models/user.model';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-event-detail',
-  imports: [RouterLink],
+  imports: [RouterLink, CommonModule, FormsModule],
   templateUrl: './event-detail.html',
   styleUrl: './event-detail.css',
 })
@@ -21,6 +23,8 @@ export class EventDetail implements OnInit {
   creatorProfile: UserProfile | undefined;
 
   canJoinEvent: boolean = false;
+
+  isAdmin: boolean = false;
 
   constructor(
     private route: ActivatedRoute, 
@@ -36,6 +40,7 @@ export class EventDetail implements OnInit {
     const id = idParam ? Number(idParam) : NaN;
 
     this.canJoinEvent = this.permissionService.hasPermission('join_event');
+    this.isAdmin = this.permissionService.isAdmin();
 
     this.service.getById(id).subscribe(event => {
       this.event = event;

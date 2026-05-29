@@ -9,20 +9,6 @@
   gap: 10px;
 }
 
-/* .navbar {
-  background: #6C9053;
-  color: #E5E0D8;
-  padding: 16px 24px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin: 0;
-  position: fixed;
-  width: 100vw;
-  height: 60px;
-  top: 0;
-} */
-
 .logo-bar {
   font-weight: bold;
   font-size: 20px;
@@ -35,21 +21,6 @@
   width: auto;
   display: block;
 }
-
-/* .profile-btn {
-  background: rgba(255,255,255,0.25);
-  border: none;
-  padding: 8px 16px;
-  border-radius: 20px;
-  color: white;
-  cursor: pointer;
-  transition: 0.2s;
-} */
-
-/* .profile-btn:hover {
-  background: rgba(255,255,255,0.4);
-} */
-
 
 .navbar {
   background: #6C9053;
@@ -99,12 +70,9 @@
   transform: scale(0.97);
 }
 
-
-
 .container {
   max-width: 1000px;
   margin: 70px auto 30px auto;
-  /* margin-top: 70px; */
   padding: 0 20px;
 }
 
@@ -121,14 +89,12 @@
   text-decoration: underline;
 }
 
-
 .card {
-  background: rgba(255,255,255,0.4);
-  border: 2px solid #8ea37a;
-  border-radius: 16px;
+  background: rgba(255,255,255,0.8);
+  border-radius: 10px;
   padding: 20px;
   margin-bottom: 25px;
-  /* backdrop-filter: blur(6px); */
+  border: 2px solid #B3B792 30%;
 }
 
 .card-header {
@@ -184,4 +150,87 @@
 .progress-item p {
   font-size: 0.8rem;
   color: #5a564d;
+}
+
+.mobile-nav {
+  display: none;
+  margin-top: 56px;
+  width: 100%;
+  z-index: 999;
+  background-color: transparent;
+  overflow-x: auto;
+  scrollbar-width: none;
+  padding: 8px 12px;
+  gap: 8px;
+}
+
+.mobile-nav::-webkit-scrollbar {
+  display: none;
+}
+
+.mobile-nav-btn {
+  flex-shrink: 0;
+  background: white;
+  border: 1px solid #B3B792;
+  padding: 6px 14px;
+  border-radius: 20px;
+  color: #725C3A;
+  font-size: 13px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.mobile-nav-btn.active {
+  background: #6C9053;
+  color: white;
+  border-color: #6C9053;
+}
+
+
+@media (max-width: 768px) {
+  .container {
+    margin: 1px 3vw !important;
+  }
+
+  .header {
+    padding: 0 16px;
+    height: 56px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    overflow: hidden;
+  }
+
+  .logo-bar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #E5E0D8;
+    font-size: 16px;
+    font-weight: bold;
+    white-space: nowrap;
+    flex-shrink: 0;
+    min-width: 0;
+  }
+
+  .logo-bar span {
+    color: #E5E0D8;
+    font-size: 16px;
+    font-weight: bold;
+    display: inline-block;
+  }
+
+  .logo {
+    height: 40px;
+    width: auto;
+    flex-shrink: 0;
+  }
+
+  .header-right {
+    display: none;
+  }
+
+  .mobile-nav {
+    display: flex;
+  }
 }

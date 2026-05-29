@@ -5,6 +5,8 @@ import { Chart, registerables } from 'chart.js';
 import { PermissionService } from '../../services/permission';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { ChangeDetectorRef } from '@angular/core';
+import { AuthService } from '../../services/auth';
 
 Chart.register(...registerables);
 
@@ -26,17 +28,11 @@ export class Statistics implements AfterViewInit {
   chart3: any;
 
   constructor(
-    private service: EventService, 
-    private permissionService: PermissionService
+    private service: EventService,
+    private authService: AuthService,
+    private permissionService: PermissionService,
+    private cdr: ChangeDetectorRef
   ) {
-    this.isAdmin = this.permissionService.isAdmin();
-    
-    this.service.getAll('all', '', 'all', -1, -1).subscribe(events => {
-      this.totalEvents = events.length;
-      this.totalAttendees = events.reduce((sum, e) => sum + (e.attendees ? e.attendees.length : 0), 0);
-      this.avgAttendees = this.totalEvents > 0 ? Number((this.totalAttendees / this.totalEvents).toFixed(1)) : 0;
-      this.totalRevenue = events.reduce((sum, e) => sum + (e.price * (e.attendees ? e.attendees.length : 0)), 0);
-    });
   }
 
   // first load html charts, then run this code
@@ -44,8 +40,18 @@ export class Statistics implements AfterViewInit {
     this.service.getAll('all', '', 'all', -1, -1).subscribe(events => {
       this.renderChart1(events);
       this.renderChart2(events);
-      this.renderChart3();
+      this.totalEvents = events.length;
+      this.totalAttendees = events.reduce((sum, e) => sum + (e.attendees ? e.attendees.length : 0), 0);
+      this.avgAttendees = this.totalEvents > 0 ? Number((this.totalAttendees / this.totalEvents).toFixed(1)) : 0;
+      this.totalRevenue = events.reduce((sum, e) => sum + (e.price * (e.attendees ? e.attendees.length : 0)), 0);
+      this.cdr.detectChanges();
     });
+
+    this.authService.getAllUsers().subscribe(users => {
+      this.renderChart3(users);
+    });
+
+    this.isAdmin = this.permissionService.isAdmin();
   }
 
   private renderChart1(events: any[]) {
@@ -113,15 +119,31 @@ export class Statistics implements AfterViewInit {
     });
   }
 
-  private renderChart3() {
+  private renderChart3(users: any[]) {
+    let lupisori = 0;
+    let temerari = 0;
+    let exploratori = 0;
+    let seniori = 0;
+    let lideri = 0;
+
+    users.forEach(u => {
+      if (u.scoutLevel === 'Lupisor') lupisori++;
+      else if (u.scoutLevel === 'Temerar') temerari++;
+      else if (u.scoutLevel === 'Explorator') exploratori++;
+      else if (u.scoutLevel === 'Senior') seniori++;
+      else if (u.scoutLevel === 'Lider') lideri++;
+    });
+
+    let maxCount = Math.max(lupisori, temerari, exploratori, seniori, lideri);
+
     this.chart3 = new Chart('chart3', {
       type: 'bar',
       data: {
-        labels: ['Lupisori', 'Temerari', 'Exploratori', 'Seniori'],
+        labels: ['Lupisori', 'Temerari', 'Exploratori', 'Seniori', 'Lideri'],
         datasets: [{
-          label: 'Attendees',
-          data: [55, 75, 90, 65], // hardcoded some data
-          backgroundColor: ['#7c9a6f' , '#a3bfa0', '#5c4033', '#9e7b4f'],
+          label: 'Scouts',
+          data: [lupisori, temerari, exploratori, seniori, lideri],
+          backgroundColor: ['#7c9a6f' , '#a3bfa0', '#5c4033', '#9e7b4f', '#c49a6f'],
           barPercentage: 0.7
         }]
       },
@@ -131,7 +153,7 @@ export class Statistics implements AfterViewInit {
           legend: { position: 'bottom', labels: { boxWidth: 12 } }
         },
         scales: {
-          y: { beginAtZero: true, suggestedMax: 100 },
+          y: { beginAtZero: true, suggestedMax: maxCount + 1 },
           x: { ticks: { maxRotation: 45, minRotation: 45, font: { size: 10 } } }
         }
       }

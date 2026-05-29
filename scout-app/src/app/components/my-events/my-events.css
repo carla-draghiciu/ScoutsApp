@@ -3,7 +3,6 @@
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  /* font-family: sans-serif; */
 }
 
 .header-right {
@@ -17,21 +16,6 @@
   min-height: 100vh;
 }
 
-/* .header {
-  background: #6C9053;
-  color: #E5E0D8;
-  padding: 0px 24px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin: 0;
-  position: fixed;
-  width: 100vw;
-  height: 60px;
-  top: 0;
-  z-index: 1000;
-} */
-
 .logo-bar {
   font-weight: bold;
   font-size: 20px;
@@ -44,16 +28,6 @@
   width: auto;
   display: block;
 }
-
-/* .profile-btn {
-  background: rgba(255,255,255,0.2);
-  border: none;
-  padding: 10px 14px;
-  border-radius: 20px;
-  color: white;
-  cursor: pointer;
-} */
-
 
 .header {
   background: #6C9053;
@@ -249,4 +223,119 @@
   border: 1px solid #B3B792;
   padding: 6px 14px;
   border-radius: 5px;
+}
+
+.mobile-nav {
+  display: none;
+  margin-top: 56px;
+  margin-bottom: 0;
+  width: 100%;
+  z-index: 999;
+  background-color: transparent;
+  overflow-x: auto;
+  scrollbar-width: none;
+  padding: 8px 12px;
+  gap: 8px;
+}
+
+.mobile-nav::-webkit-scrollbar {
+  display: none;
+}
+
+.mobile-nav-btn {
+  flex-shrink: 0;
+  background: white;
+  border: 1px solid #B3B792;
+  padding: 6px 14px;
+  border-radius: 20px;
+  color: #725C3A;
+  font-size: 13px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.mobile-nav-btn.active {
+  background: #6C9053;
+  color: white;
+  border-color: #6C9053;
+}
+
+
+@media (max-width: 768px) {
+  .main {
+    margin: 0px 3vw !important;
+  }
+
+
+  .header {
+    padding: 0 16px;
+    height: 56px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    overflow: hidden;
+  }
+
+  .logo-bar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #E5E0D8;
+    font-size: 16px;
+    font-weight: bold;
+    white-space: nowrap;
+    flex-shrink: 0;
+    min-width: 0;
+  }
+
+  .logo-bar span {
+    color: #E5E0D8;
+    font-size: 16px;
+    font-weight: bold;
+    display: inline-block;
+  }
+
+  .logo {
+    height: 40px;
+    width: auto;
+    flex-shrink: 0;
+  }
+
+  .header-right {
+    display: none;
+  }
+
+  .mobile-nav {
+    display: flex;
+  }
+
+  .grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+    padding: 12px;
+  }
+
+  .card {
+    padding: 14px;
+  }
+
+  .card h3 {
+    margin-top: 0;
+    font-size: 15px;
+    padding-right: 70px;
+  }
+
+  .card p {
+    font-size: 13px;
+  }
+
+  .pagination {
+    margin: 24px auto;
+    padding-bottom: 24px;
+    gap: 10px;
+  }
+
+  .pagination button {
+    padding: 8px 20px;
+  }
 }

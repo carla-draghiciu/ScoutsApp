@@ -10,7 +10,6 @@
 }
 
 .container {
-  /* height: 90vh; */
   width: 70vw;
   margin: auto;
   margin-top: 5vh;
@@ -30,7 +29,6 @@
 
 .logo-container {
   display: flex;
-  /* justify-content: center; */
   align-items: center;
   color: #725C3A;
 }
@@ -46,10 +44,6 @@
 .logo-container h2 {
   margin: 0;
 }
-
-/* .title p {
-  margin: 0;
-} */
 
 .p1 {
   color: #725C3A;
@@ -143,24 +137,82 @@ select {
 }
 
 @media (max-width: 768px) {
-  .container {
-    width: 92vw !important;
-    padding: 15px 15px 30px 15px !important;
-    margin-bottom: 15vh !important;
-    margin-top: 2vh !important;
-  }
 
   .back {
-    margin-top: 3vh !important;
-    margin-left: 4vw !important;
+    margin-top: 1vh;
+    margin-left: 4vw;
+    font-size: 15px;
   }
 
-  .form-group, .form-row, input, select, .submit-btn {
-    width: 100% !important;
+  .container {
+    width: 92vw;
+    margin: 2vh auto 10vh auto;
+    padding: 16px 16px 32px 16px;
+    border-radius: 16px;
+    box-sizing: border-box;
+  }
+
+  .logo {
+    width: 40px;
+  }
+
+  .logo-container h2 {
+    font-size: 18px;
+  }
+
+  .title {
+    font-size: 20px;
+    margin-bottom: 16px;
+  }
+
+  .p1 {
+    font-size: 20px;
+    margin-bottom: 8px;
+  }
+
+  .p2 {
+    font-size: 13px;
+    text-align: center;
+  }
+
+  .register-form {
+    align-items: center;
+  }
+
+  .form-group {
+    width: 100%;
+    margin-bottom: 12px;
+    box-sizing: border-box;
+  }
+
+  /* Reset the vw-based widths — let the box model handle it */
+  input,
+  select {
+    width: 100%;
+    font-size: 16px; /* prevents iOS auto-zoom on focus */
   }
 
   .form-row {
-    flex-direction: column !important;
-    gap: 10px !important;
+    flex-direction: column;
+    gap: 0;
+    width: 100%;
   }
-}
+
+  .form-row .form-group input,
+  .form-row .form-group select {
+    width: 100%;
+  }
+
+  input[type="date"] {
+    width: 100%;
+    min-width: 0;        /* removes the browser-imposed minimum */
+    appearance: none;    /* strips iOS native styling that adds width */
+    -webkit-appearance: none;
+  }
+
+  .submit-btn {
+    width: 100%;
+    font-size: 15px;
+    margin-top: 8px;
+  }
+}

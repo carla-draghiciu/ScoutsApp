@@ -13,24 +13,7 @@
   display: block;
   min-height: 100vh;
   font-family: Arial, sans-serif;
-  background: linear-gradient(to right, #e7e2d8, #d6c8b0);
 }
-
-
-/* .header {
-  background: #6C9053;
-  color: #E5E0D8;
-  padding: 16px 24px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin: 0;
-  position: fixed;
-  width: 100vw;
-  height: 60px;
-  top: 0;
-  z-index: 1000;
-} */
 
 .logo-bar {
   font-weight: bold;
@@ -44,16 +27,6 @@
   width: auto;
   display: block;
 }
-
-/* .profile-btn {
-  background: rgba(255,255,255,0.2);
-  border: none;
-  padding: 10px 14px;
-  border-radius: 20px;
-  color: white;
-  cursor: pointer;
-} */
-
 
 .header {
   background: #6C9053;
@@ -164,7 +137,6 @@
   font-variation-settings: 'OPSZ' 48, 'wght' 500, 'FILL' 0, 'GRAD' 0;
 }
 
-/* Keep generic span text sizing from shrinking icon spans. */
 .stat-card span:not(.icon) {
   display: block;
   font-size: 14px;
@@ -211,6 +183,86 @@ canvas {
   margin: 5px 0 15px 0;
 }
 
+.mobile-nav {
+  display: none;
+  margin-top: 56px;
+  width: 100%;
+  z-index: 999;
+  background-color: transparent;
+  overflow-x: auto;
+  scrollbar-width: none;
+  padding: 8px 12px;
+  gap: 8px;
+}
+
+.mobile-nav::-webkit-scrollbar {
+  display: none;
+}
+
+.mobile-nav-btn {
+  flex-shrink: 0;
+  background: white;
+  border: 1px solid #B3B792;
+  padding: 6px 14px;
+  border-radius: 20px;
+  color: #725C3A;
+  font-size: 13px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.mobile-nav-btn.active {
+  background: #6C9053;
+  color: white;
+  border-color: #6C9053;
+}
+
+
+@media (max-width: 768px) {
+
+  .header {
+    padding: 0 16px;
+    height: 56px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    overflow: hidden;
+  }
+
+  .logo-bar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #E5E0D8;
+    font-size: 16px;
+    font-weight: bold;
+    white-space: nowrap;
+    flex-shrink: 0;
+    min-width: 0;
+  }
+
+  .logo-bar span {
+    color: #E5E0D8;
+    font-size: 16px;
+    font-weight: bold;
+    display: inline-block;
+  }
+
+  .logo {
+    height: 40px;
+    width: auto;
+    flex-shrink: 0;
+  }
+
+  .header-right {
+    display: none;
+  }
+
+  .mobile-nav {
+    display: flex;
+  }
+}
+
 @media (max-width: 1200px) {
   .stats {
     grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -220,24 +272,7 @@ canvas {
 @media (max-width: 768px) {
   .container {
     padding: 20px 14px;
-    margin-top: 70px;
-  }
-
-  .header {
-    padding: 10px 14px;
-  }
-
-  .logo {
-    height: 64px;
-  }
-
-  .logo-bar {
-    font-size: 18px;
-  }
-
-  .profile-btn {
-    padding: 8px 12px;
-    border-radius: 16px;
+    margin-top: 0px;
   }
 
   .stats {
@@ -275,5 +310,58 @@ canvas {
 @media (max-width: 420px) {
   .icon {
     font-size: 34px;
+  }
+}
+
+@media (max-width: 768px) {
+  .stats {
+    grid-template-columns: repeat(2, minmax(0, 1fr));  /* was: 1fr */
+    gap: 12px;                                          /* was: 14px */
+  }
+
+  .stat-card {
+    padding: 14px;
+    min-height: 116px;
+    gap: 18px;           /* add this — pushes number toward the bottom */
+  }
+
+  .stat-title {
+    font-size: 11px;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+  }
+
+  .number {
+    font-size: 22px;
+  }
+
+  .icon {
+    font-size: 26px;
+  }
+}
+
+@media (max-width: 768px) {
+  .charts {
+    flex-direction: column;   /* stack vertically, one per row */
+    gap: 12px;
+  }
+
+  .chart-card {
+    min-width: 0;             /* was 280px — this was forcing overflow */
+    width: 100%;
+    padding: 14px 12px;
+  }
+
+  .chart-card h3 {
+    font-size: 14px;
+  }
+
+  .chart-desc {
+    font-size: 11px;
+    margin-bottom: 10px;
+  }
+
+  canvas {
+    max-height: 200px;        /* keeps charts compact, not too tall */
   }
 }

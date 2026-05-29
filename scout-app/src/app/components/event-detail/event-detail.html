@@ -1,7 +1,7 @@
 <header class="header">
   <div class="logo-bar">
     <img class="logo" src="/pictures/logo-beige.png">
-    BePrepared
+    <span>BePrepared</span>
   </div>
   <div class="header-right">
     <button routerLink="/chat" class="header-btns">Chat</button>
@@ -10,12 +10,22 @@
     <button routerLink="/badges" class="header-btns">Badges</button>
     <button routerLink="/statistics" class="header-btns">Statistics</button>
     <button routerLink="/editprofile" class="header-btns">Profile</button>
+    <button *ngIf="isAdmin" routerLink="/admin/observation" class="header-btns">Observations</button>
   </div>
 </header>
+<nav class="mobile-nav">
+  <button routerLink="/chat" class="mobile-nav-btn">Chat</button>
+  <button routerLink="/events" class="mobile-nav-btn">All Events</button>
+  <button routerLink="/myevents" class="mobile-nav-btn">My Events</button>
+  <button routerLink="/badges" class="mobile-nav-btn">Badges</button>
+  <button routerLink="/statistics" class="mobile-nav-btn">Statistics</button>
+  <button routerLink="/editprofile" class="mobile-nav-btn">Profile</button>
+  <button *ngIf="isAdmin" routerLink="/admin/observation" class="mobile-nav-btn">Observations</button>
+</nav>
 
 <main class="main-container">
 
-  <p routerLink="/events" class="navigate-back"><- Back</p>
+  <p routerLink="/events" class="navigate-back">< Back</p>
 
       <div class="card">
 

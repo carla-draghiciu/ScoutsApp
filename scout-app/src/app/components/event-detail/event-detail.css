@@ -8,24 +8,8 @@
 
 .header-right {
   display: flex;
-  /* width: 40vw; */
-  /* justify-content: space-evenly; */
   gap: 10px;
 }
-
-/* .header {
-  background: #6C9053;
-  color: #E5E0D8;
-  padding: 16px 24px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin: 0;
-  position: fixed;
-  width: 100vw;
-  height: 60px;
-  top: 0;
-} */
 
 .logo-bar {
   font-weight: bold;
@@ -39,15 +23,6 @@
   width: auto;
   display: block;
 }
-
-/* .profile-btn {
-  background: rgba(255,255,255,0.2);
-  border: none;
-  padding: 10px 14px;
-  border-radius: 20px;
-  color: white;
-  cursor: pointer;
-} */
 
 .header {
   background: #6C9053;
@@ -298,7 +273,6 @@ body {
   align-items: center;
   justify-content: space-between;
   gap: 16px;
-  /* background: #fdf7f2; */
   background-color: rgba(229, 224, 216, 0.5);
   border-radius: 10px;
   width: 95%;
@@ -376,10 +350,89 @@ body {
   transform: scale(0.97);
 }
 
+.mobile-nav {
+  display: none;
+  margin-top: 56px;
+  width: 100%;
+  z-index: 999;
+  background-color: transparent;
+  overflow-x: auto;
+  scrollbar-width: none;
+  padding: 8px 12px;
+  gap: 8px;
+}
+
+.mobile-nav::-webkit-scrollbar {
+  display: none;
+}
+
+.mobile-nav-btn {
+  flex-shrink: 0;
+  background: white;
+  border: 1px solid #B3B792;
+  padding: 6px 14px;
+  border-radius: 20px;
+  color: #725C3A;
+  font-size: 13px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.mobile-nav-btn.active {
+  background: #6C9053;
+  color: white;
+  border-color: #6C9053;
+}
+
+
+@media (max-width: 768px) {
+
+  .header {
+    padding: 0 16px;
+    height: 56px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    overflow: hidden;
+  }
+
+  .logo-bar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #E5E0D8;
+    font-size: 16px;
+    font-weight: bold;
+    white-space: nowrap;
+    flex-shrink: 0;
+    min-width: 0;
+  }
+
+  .logo-bar span {
+    color: #E5E0D8;
+    font-size: 16px;
+    font-weight: bold;
+    display: inline-block;
+  }
+
+  .logo {
+    height: 40px;
+    width: auto;
+    flex-shrink: 0;
+  }
+
+  .header-right {
+    display: none;
+  }
+
+  .mobile-nav {
+    display: flex;
+  }
+}
 
 @media (max-width: 768px) {
   .main-container {
-    margin: 70px 3vw !important;
+    margin: 0px 3vw !important;
   }
 
   .card-body {
@@ -431,4 +484,4 @@ body {
   nav {
     padding: 0 16px;
   }
-}
+}

@@ -23,10 +23,11 @@ namespace scout_api.Repositories
             return this.sessionRepository.Sessions.Count;
         }
 
-        public List<User> GetAll()
+        public List<UserDTO?> GetAll()
         {
             return databaseContext.Users
                 .Include(user => user.EarnedBadges)
+                .Select(user => user.ToDto())
                 .ToList();
         }
 

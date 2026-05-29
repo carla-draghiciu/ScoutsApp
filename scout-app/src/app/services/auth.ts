@@ -32,4 +32,8 @@ export class AuthService {
   getUserById(id: number): Observable<UserProfile | undefined> {
     return this.http.get<UserProfile | undefined>(`${this.apiUrl}/${id}`);
   }
+
+  getAllUsers(): Observable<UserProfile[]> {
+    return this.http.get<UserProfile[]>(`${this.apiUrl}`);
+  }
 }
