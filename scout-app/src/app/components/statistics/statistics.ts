@@ -62,7 +62,7 @@ export class Statistics implements AfterViewInit {
         datasets: [{
           label: 'Attendees',
           data: events.map(e => e.attendees ? e.attendees.length : 0),
-          backgroundColor: '#20c997',
+          backgroundColor: '#a3bfa0',
           barPercentage: 0.6
         }]
       },
