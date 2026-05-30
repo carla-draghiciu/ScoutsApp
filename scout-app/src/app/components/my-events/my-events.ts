@@ -6,10 +6,11 @@ import { OnInit } from '@angular/core';
 import { ChangeDetectorRef } from '@angular/core';
 import { PermissionService } from '../../services/permission';
 import { EventModel } from '../../models/event.model';
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-my-events',
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule, RouterLink, FormsModule],
   templateUrl: './my-events.html',
   styleUrl: './my-events.css',
 })
