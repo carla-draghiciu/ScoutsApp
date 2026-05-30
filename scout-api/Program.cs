@@ -48,7 +48,7 @@ builder.Services.AddCors(options =>
             "https://172.20.10.3:4200",
             "http://192.168.100.30:4200",
             "https://192.168.100.30:4200",
-            "https://cheerful-hope-production-d5cf.up.railway.app"
+            "https://beprepared.up.railway.app"
         )
         .AllowAnyHeader()
         .AllowAnyMethod()
