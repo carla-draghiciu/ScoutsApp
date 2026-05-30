@@ -19,6 +19,7 @@ export class MyEvents implements OnInit {
   pageSize = 6;
   userId = Number(localStorage.getItem('userId'));
   isAdmin: boolean = false;
+  isLoading = false;
 
   isAttending(event: EventModel): boolean {
     return event?.attendees?.some(a => a.attendeeId === this.userId) ?? false;
@@ -32,7 +33,9 @@ export class MyEvents implements OnInit {
 
   ngOnInit() {
     this.isAdmin = this.permissionService.isAdmin();
+    this.isLoading = true;
     this.service.getByCreatorId(this.userId).subscribe(usersEvents => {
+      this.isLoading = false;
       this.events = usersEvents;
       this.cdr.detectChanges();
     })
