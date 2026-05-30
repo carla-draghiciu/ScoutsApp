@@ -22,6 +22,7 @@ export class Statistics implements AfterViewInit {
   avgAttendees = 0;
   totalRevenue = 0;
   isAdmin: boolean = false;
+  isLoading = false;
 
   chart1: any;
   chart2: any;
@@ -37,7 +38,9 @@ export class Statistics implements AfterViewInit {
 
   // first load html charts, then run this code
   ngAfterViewInit() {
+    this.isLoading = true;
     this.service.getAll('all', '', 'all', -1, -1).subscribe(events => {
+      this.isLoading = false;
       this.renderChart1(events);
       this.renderChart2(events);
       this.totalEvents = events.length;

@@ -260,6 +260,12 @@
   border-color: #6C9053;
 }
 
+.loading-events {
+  width: 10%;
+  height: 10%;
+  margin: auto;
+}
+
 
 @media (max-width: 768px) {
   .main {

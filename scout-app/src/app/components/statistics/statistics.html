@@ -23,6 +23,8 @@
   <button *ngIf="isAdmin" routerLink="/admin/observation" class="mobile-nav-btn">Observations</button>
 </nav>
 
+<div *ngIf="isLoading" class="loading-events">Loading statistics...</div>
+
 <div class="container">
 
       <div class="stats">
