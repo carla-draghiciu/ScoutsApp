@@ -25,7 +25,7 @@
 
 <div *ngIf="isLoading" class="loading-events">Loading statistics...</div>
 
-<div class="container">
+<div *ngIf="!isLoading" class="container">
 
       <div class="stats">
         <div class="stat-card green">
