@@ -34,11 +34,11 @@ export class Statistics implements AfterViewInit {
     private permissionService: PermissionService,
     private cdr: ChangeDetectorRef
   ) {
+    this.isLoading = true;
   }
 
   // first load html charts, then run this code
   ngAfterViewInit() {
-    this.isLoading = true;
     this.service.getAll('all', '', 'all', -1, -1).subscribe(events => {
       this.isLoading = false;
       this.renderChart1(events);
