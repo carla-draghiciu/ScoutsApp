@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using scout_api.DTOs;
 using scout_api.Enums;
 using scout_api.Models;
@@ -104,54 +104,54 @@ namespace scout_api.tests
 
 
         [TestMethod]
-        public void GetAll_ReturnsAllUsers()
+        public async Task GetAll_ReturnsAllUsers()
         {
             SeedUser("user1@test.com");
             SeedUser("user2@test.com");
 
-            var result = _userService.GetAll();
+            var result = await _userService.GetAllAsync();
 
             Assert.AreEqual(2, result.Count);
         }
 
         [TestMethod]
-        public void GetAll_EmptyDatabase_ReturnsEmptyList()
+        public async Task GetAll_EmptyDatabase_ReturnsEmptyList()
         {
-            var result = _userService.GetAll();
+            var result = await _userService.GetAllAsync();
 
             Assert.AreEqual(0, result.Count);
         }
 
         [TestMethod]
-        public void Register_DuplicateEmail_ReturnsNull()
+        public async Task Register_DuplicateEmail_ReturnsNull()
         {
             SeedUser("existing@test.com");
             var dto = ValidRegisterDto("existing@test.com");
 
-            var result = _userService.Register(dto);
+            var result = await _userService.RegisterAsync(dto);
 
             Assert.IsNull(result);
             Assert.AreEqual(1, _context.Users.Count()); // no new user added
         }
 
         [TestMethod]
-        public void Register_InvalidScoutLevel_ReturnsNull()
+        public async Task Register_InvalidScoutLevel_ReturnsNull()
         {
             var dto = ValidRegisterDto();
             dto.ScoutLevel = "InvalidLevel";
 
-            var result = _userService.Register(dto);
+            var result = await _userService.RegisterAsync(dto);
 
             Assert.IsNull(result);
         }
 
         [TestMethod]
-        public void Login_ValidCredentials_ReturnsUserAndToken()
+        public async Task Login_ValidCredentials_ReturnsUserAndToken()
         {
             SeedUser("login@test.com");
             var dto = LoginDtoFor("login@test.com");
 
-            var result = _userService.Login(dto);
+            var result = await _userService.LoginAsync(dto);
 
             Assert.IsNotNull(result);
             Assert.AreEqual("login@test.com", result.Value.user.Email);
@@ -159,23 +159,23 @@ namespace scout_api.tests
         }
 
         [TestMethod]
-        public void Login_ValidCredentials_AddsToSession()
+        public async Task Login_ValidCredentials_AddsToSession()
         {
             SeedUser("session@test.com");
             var dto = LoginDtoFor("session@test.com");
 
-            var result = _userService.Login(dto);
+            var result = await _userService.LoginAsync(dto);
 
             Assert.IsTrue(_sessionService.Sessions.ContainsKey(result.Value.token));
         }
 
         [TestMethod]
-        public void Login_ValidCredentials_ReturnsRoleAndPermissions()
+        public async Task Login_ValidCredentials_ReturnsRoleAndPermissions()
         {
             SeedUser("role@test.com", roleId: 2);
             var dto = LoginDtoFor("role@test.com");
 
-            var result = _userService.Login(dto);
+            var result = await _userService.LoginAsync(dto);
 
             Assert.IsNotNull(result);
             Assert.AreEqual("User", result.Value.role);
@@ -184,12 +184,12 @@ namespace scout_api.tests
         }
 
         [TestMethod]
-        public void Login_AdminUser_ReturnsAllPermissions()
+        public async Task Login_AdminUser_ReturnsAllPermissions()
         {
             SeedUser("admin@test.com", roleId: 1);
             var dto = LoginDtoFor("admin@test.com");
 
-            var result = _userService.Login(dto);
+            var result = await _userService.LoginAsync(dto);
 
             Assert.IsNotNull(result);
             Assert.AreEqual("Admin", result.Value.role);
@@ -198,31 +198,31 @@ namespace scout_api.tests
         }
 
         [TestMethod]
-        public void Login_WrongPassword_ReturnsNull()
+        public async Task Login_WrongPassword_ReturnsNull()
         {
             SeedUser("wrong@test.com");
             var dto = LoginDtoFor("wrong@test.com", "WrongPassword!");
 
-            var result = _userService.Login(dto);
+            var result = await _userService.LoginAsync(dto);
 
             Assert.IsNull(result);
         }
 
         [TestMethod]
-        public void Login_NonExistingEmail_ReturnsNull()
+        public async Task Login_NonExistingEmail_ReturnsNull()
         {
             var dto = LoginDtoFor("ghost@test.com");
 
-            var result = _userService.Login(dto);
+            var result = await _userService.LoginAsync(dto);
 
             Assert.IsNull(result);
         }
 
         [TestMethod]
-        public void Logout_ValidToken_RemovesFromSession()
+        public async Task Logout_ValidToken_RemovesFromSession()
         {
             SeedUser("logout@test.com");
-            var loginResult = _userService.Login(LoginDtoFor("logout@test.com"));
+            var loginResult = await _userService.LoginAsync(LoginDtoFor("logout@test.com"));
             var token = loginResult!.Value.token;
 
             _userService.Logout(token);
@@ -231,16 +231,16 @@ namespace scout_api.tests
         }
 
         [TestMethod]
-        public void Logout_InvalidToken_DoesNotThrow()
+        public async Task Logout_InvalidToken_DoesNotThrow()
         {
             _userService.Logout("non-existent-token");
         }
 
         [TestMethod]
-        public void GetUserByToken_ValidToken_ReturnsUser()
+        public async Task GetUserByToken_ValidToken_ReturnsUser()
         {
             SeedUser("token@test.com");
-            var loginResult = _userService.Login(LoginDtoFor("token@test.com"));
+            var loginResult = await _userService.LoginAsync(LoginDtoFor("token@test.com"));
             var token = loginResult!.Value.token;
 
             var result = _userService.GetUserByToken(token);
@@ -250,7 +250,7 @@ namespace scout_api.tests
         }
 
         [TestMethod]
-        public void GetUserByToken_InvalidToken_ReturnsNull()
+        public async Task GetUserByToken_InvalidToken_ReturnsNull()
         {
             var result = _userService.GetUserByToken("fake-token");
 
@@ -258,29 +258,29 @@ namespace scout_api.tests
         }
 
         [TestMethod]
-        public void GetUserById_ExistingId_ReturnsUserDto()
+        public async Task GetUserById_ExistingId_ReturnsUserDto()
         {
             var seeded = SeedUser("byid@test.com");
 
-            var result = _userService.GetUserById(seeded.Id);
+            var result = await _userService.GetUserByIdAsync(seeded.Id);
 
             Assert.IsNotNull(result);
             Assert.AreEqual("byid@test.com", result.Email);
         }
 
         [TestMethod]
-        public void GetUserById_NonExistingId_ReturnsNull()
+        public async Task GetUserById_NonExistingId_ReturnsNull()
         {
-            var result = _userService.GetUserById(9999);
+            var result = await _userService.GetUserByIdAsync(9999);
 
             Assert.IsNull(result);
         }
 
         [TestMethod]
-        public void GetAllLoggedIn_ReturnsCurrentSessions()
+        public async Task GetAllLoggedIn_ReturnsCurrentSessions()
         {
             SeedUser("logged@test.com");
-            _userService.Login(LoginDtoFor("logged@test.com"));
+            await _userService.LoginAsync(LoginDtoFor("logged@test.com"));
 
             var result = _userService.GetAllLoggedIn();
 

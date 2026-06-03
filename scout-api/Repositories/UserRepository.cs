@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using scout_api.DTOs;
 using scout_api.Enums;
 using scout_api.Mappers;
@@ -23,12 +23,12 @@ namespace scout_api.Repositories
             return this.sessionRepository.Sessions.Count;
         }
 
-        public List<UserDTO?> GetAll()
+        public async Task<List<UserDTO?>> GetAllAsync()
         {
-            return databaseContext.Users
+            return await databaseContext.Users
                 .Include(user => user.EarnedBadges)
                 .Select(user => user.ToDto())
-                .ToList();
+                .ToListAsync();
         }
 
         public Dictionary<string, User> GetAllLoggedIn()
@@ -36,10 +36,10 @@ namespace scout_api.Repositories
             return this.sessionRepository.Sessions;
         }
 
-        public User? FindUserByEmail(string email)
+        public async Task<User?> FindUserByEmailAsync(string email)
         {
-            return databaseContext.Users
-                .FirstOrDefault(user => user.Email == email);
+            return await databaseContext.Users
+                .FirstOrDefaultAsync(user => user.Email == email);
         }
 
         public User? GetUserByToken(string token)
@@ -48,31 +48,32 @@ namespace scout_api.Repositories
             return user;
         }
 
-        public UserDTO? GetUserById(int userId)
+        public async Task<UserDTO?> GetUserByIdAsync(int userId)
         {
-            return databaseContext.Users
+            var user = await databaseContext.Users
                 .Include(user => user.EarnedBadges)
-                .FirstOrDefault(user => user.Id == userId)
-                .ToDto();
+                .FirstOrDefaultAsync(user => user.Id == userId);
+
+            return user.ToDto();
         }
 
-        public User? GetUserByIdentifier(string uniqueIdentifier)
+        public async Task<User?> GetUserByIdentifierAsync(string uniqueIdentifier)
         {
-            return databaseContext.Users
+            return await databaseContext.Users
                 .Include(user => user.Role)
                     .ThenInclude(role => role.RolePermissions)
                         .ThenInclude(rp => rp.Permission)
-                .FirstOrDefault(user => user.Email == uniqueIdentifier || user.ScoutId == uniqueIdentifier || user.Name == uniqueIdentifier);
+                .FirstOrDefaultAsync(user => user.Email == uniqueIdentifier || user.ScoutId == uniqueIdentifier || user.Name == uniqueIdentifier);
         }
 
-        public User AddUser(User user)
+        public async Task<User> AddUserAsync(User user)
         {
             databaseContext.Users.Add(user);
-            databaseContext.SaveChanges();
+            await databaseContext.SaveChangesAsync();
             return user;
         }
 
-        public (User user, string token, string role, List<string> permissions)? Login(User user)
+        public (User user, string token, string role, List<string> permissions) Login(User user)
         {
             var token = Guid.NewGuid().ToString();
             this.sessionRepository.Sessions[token] = user;

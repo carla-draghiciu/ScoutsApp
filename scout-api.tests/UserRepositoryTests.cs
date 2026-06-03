@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using scout_api.Models;
 using scout_api.Repositories;
 using System;
@@ -56,13 +56,13 @@ namespace scout_api.tests
         public void Cleanup() => _dbContext.Dispose();
 
         [TestMethod]
-        public void GetSeshCount_ReturnsZero_WhenNoSessions()
+        public async Task GetSeshCount_ReturnsZero_WhenNoSessions()
         {
             Assert.AreEqual(0, _userRepository.GetSeshCount());
         }
 
         [TestMethod]
-        public void GetSeshCount_ReflectsSessionCount_AfterLogins()
+        public async Task GetSeshCount_ReflectsSessionCount_AfterLogins()
         {
             var user = MakeUser();
             _dbContext.Users.Add(user);
@@ -75,16 +75,16 @@ namespace scout_api.tests
         }
 
         [TestMethod]
-        public void GetAll_ReturnsEmptyList_WhenNoUsers()
+        public async Task GetAll_ReturnsEmptyList_WhenNoUsers()
         {
-            var result = _userRepository.GetAll();
+            var result = await _userRepository.GetAllAsync();
 
             Assert.IsNotNull(result);
             Assert.AreEqual(0, result.Count);
         }
 
         [TestMethod]
-        public void GetAllLoggedIn_ReturnsEmptyDictionary_Initially()
+        public async Task GetAllLoggedIn_ReturnsEmptyDictionary_Initially()
         {
             var result = _userRepository.GetAllLoggedIn();
 
@@ -93,7 +93,7 @@ namespace scout_api.tests
         }
 
         [TestMethod]
-        public void GetAllLoggedIn_ContainsUser_AfterLogin()
+        public async Task GetAllLoggedIn_ContainsUser_AfterLogin()
         {
             var user = MakeUser();
             _dbContext.Users.Add(user);
@@ -102,32 +102,32 @@ namespace scout_api.tests
             var loginResult = _userRepository.Login(user);
             var sessions = _userRepository.GetAllLoggedIn();
 
-            Assert.IsTrue(sessions.ContainsKey(loginResult!.Value.token));
+            Assert.IsTrue(sessions.ContainsKey(loginResult.token));
         }
 
         [TestMethod]
-        public void FindUserByEmail_ReturnsNull_WhenEmailNotFound()
+        public async Task FindUserByEmail_ReturnsNull_WhenEmailNotFound()
         {
-            var result = _userRepository.FindUserByEmail("ghost@example.com");
+            var result = await _userRepository.FindUserByEmailAsync("ghost@example.com");
 
             Assert.IsNull(result);
         }
 
         [TestMethod]
-        public void FindUserByEmail_ReturnsUser_WhenEmailExists()
+        public async Task FindUserByEmail_ReturnsUser_WhenEmailExists()
         {
             var user = MakeUser(email: "found@example.com");
             _dbContext.Users.Add(user);
             _dbContext.SaveChanges();
 
-            var result = _userRepository.FindUserByEmail("found@example.com");
+            var result = await _userRepository.FindUserByEmailAsync("found@example.com");
 
             Assert.IsNotNull(result);
             Assert.AreEqual("found@example.com", result.Email);
         }
 
         [TestMethod]
-        public void GetUserByToken_ReturnsNull_ForUnknownToken()
+        public async Task GetUserByToken_ReturnsNull_ForUnknownToken()
         {
             var result = _userRepository.GetUserByToken("nonexistent-token");
 
@@ -135,35 +135,35 @@ namespace scout_api.tests
         }
 
         [TestMethod]
-        public void GetUserByToken_ReturnsUser_ForValidToken()
+        public async Task GetUserByToken_ReturnsUser_ForValidToken()
         {
             var user = MakeUser();
             _dbContext.Users.Add(user);
             _dbContext.SaveChanges();
 
             var loginResult = _userRepository.Login(user);
-            var result = _userRepository.GetUserByToken(loginResult!.Value.token);
+            var result = _userRepository.GetUserByToken(loginResult.token);
 
             Assert.IsNotNull(result);
             Assert.AreEqual(user.Email, result.Email);
         }
 
         [TestMethod]
-        public void GetUserById_ReturnsNull_WhenIdNotFound()
+        public async Task GetUserById_ReturnsNull_WhenIdNotFound()
         {
-            var result = _userRepository.GetUserById(999);
+            var result = await _userRepository.GetUserByIdAsync(999);
 
             Assert.IsNull(result);
         }
 
         [TestMethod]
-        public void GetUserById_ReturnsDto_WhenIdExists()
+        public async Task GetUserById_ReturnsDto_WhenIdExists()
         {
             var user = MakeUser();
             _dbContext.Users.Add(user);
             _dbContext.SaveChanges();
 
-            var result = _userRepository.GetUserById(user.Id);
+            var result = await _userRepository.GetUserByIdAsync(user.Id);
 
             Assert.IsNotNull(result);
             Assert.AreEqual(user.Email, result.Email);
@@ -173,7 +173,7 @@ namespace scout_api.tests
         [DataRow("alice@example.com")]
         [DataRow("SC001")]
         [DataRow("Alice")]
-        public void GetUserByIdentifier_FindsUser_ByEmailScoutIdOrName(string identifier)
+        public async Task GetUserByIdentifier_FindsUser_ByEmailScoutIdOrName(string identifier)
         {
             var role = MakeRole("Leader", new[] { "read", "write" });
             var user = MakeUser(name: "Alice", email: "alice@example.com", scoutId: "SC001", role: role);
@@ -181,14 +181,14 @@ namespace scout_api.tests
             _dbContext.Users.Add(user);
             _dbContext.SaveChanges();
 
-            var result = _userRepository.GetUserByIdentifier(identifier);
+            var result = await _userRepository.GetUserByIdentifierAsync(identifier);
 
             Assert.IsNotNull(result);
             Assert.AreEqual("alice@example.com", result.Email);
         }
 
         [TestMethod]
-        public void GetUserByIdentifier_IncludesRoleAndPermissions()
+        public async Task GetUserByIdentifier_IncludesRoleAndPermissions()
         {
             var role = MakeRole("Admin", new[] { "read", "write", "delete" });
             var user = MakeUser(role: role);
@@ -196,7 +196,7 @@ namespace scout_api.tests
             _dbContext.Users.Add(user);
             _dbContext.SaveChanges();
 
-            var result = _userRepository.GetUserByIdentifier(user.Email);
+            var result = await _userRepository.GetUserByIdentifierAsync(user.Email);
 
             Assert.IsNotNull(result);
             Assert.IsNotNull(result.Role);
@@ -204,34 +204,34 @@ namespace scout_api.tests
         }
 
         [TestMethod]
-        public void GetUserByIdentifier_ReturnsNull_WhenNoMatch()
+        public async Task GetUserByIdentifier_ReturnsNull_WhenNoMatch()
         {
-            var result = _userRepository.GetUserByIdentifier("no-match");
+            var result = await _userRepository.GetUserByIdentifierAsync("no-match");
 
             Assert.IsNull(result);
         }
 
         [TestMethod]
-        public void AddUser_PersistsUserToDatabase()
+        public async Task AddUser_PersistsUserToDatabase()
         {
             var user = MakeUser();
-            var result = _userRepository.AddUser(user);
+            var result = await _userRepository.AddUserAsync(user);
 
             Assert.IsNotNull(result);
             Assert.AreEqual(1, _dbContext.Users.Count());
         }
 
         [TestMethod]
-        public void AddUser_AssignsId_AfterSave()
+        public async Task AddUser_AssignsId_AfterSave()
         {
             var user = MakeUser();
-            _userRepository.AddUser(user);
+            await _userRepository.AddUserAsync(user);
 
             Assert.IsTrue(user.Id > 0);
         }
 
         [TestMethod]
-        public void Login_ReturnsNonNullResult()
+        public async Task Login_ReturnsNonNullResult()
         {
             var user = MakeUser();
             _dbContext.Users.Add(user);
@@ -243,52 +243,52 @@ namespace scout_api.tests
         }
 
         [TestMethod]
-        public void Login_CreatesSession_WithGuidToken()
+        public async Task Login_CreatesSession_WithGuidToken()
         {
             var user = MakeUser();
             var result = _userRepository.Login(user);
 
-            Assert.IsTrue(Guid.TryParse(result!.Value.token, out _));
+            Assert.IsTrue(Guid.TryParse(result.token, out _));
         }
 
         [TestMethod]
-        public void Login_ReturnsCorrectRoleAndPermissions()
+        public async Task Login_ReturnsCorrectRoleAndPermissions()
         {
             var role = MakeRole("Leader", new[] { "read", "write" });
             var user = MakeUser(role: role);
 
             var result = _userRepository.Login(user);
 
-            Assert.AreEqual("Leader", result!.Value.role);
-            CollectionAssert.AreEquivalent(new[] { "read", "write" }, result.Value.permissions);
+            Assert.AreEqual("Leader", result.role);
+            CollectionAssert.AreEquivalent(new[] { "read", "write" }, result.permissions);
         }
 
         [TestMethod]
-        public void Login_AddsTokenToSessions()
+        public async Task Login_AddsTokenToSessions()
         {
             var user = MakeUser();
             var result = _userRepository.Login(user);
 
-            Assert.IsTrue(_sessionRepository.Sessions.ContainsKey(result!.Value.token));
+            Assert.IsTrue(_sessionRepository.Sessions.ContainsKey(result.token));
         }
 
         [TestMethod]
-        public void Login_MultipleLogins_CreateDistinctTokens()
+        public async Task Login_MultipleLogins_CreateDistinctTokens()
         {
             var user = MakeUser();
             var result1 = _userRepository.Login(user);
             var result2 = _userRepository.Login(user);
 
-            Assert.AreNotEqual(result1!.Value.token, result2!.Value.token);
+            Assert.AreNotEqual(result1.token, result2.token);
             Assert.AreEqual(2, _userRepository.GetSeshCount());
         }
 
         [TestMethod]
-        public void Logout_RemovesSession_ByToken()
+        public async Task Logout_RemovesSession_ByToken()
         {
             var user = MakeUser();
             var result = _userRepository.Login(user);
-            var token = result!.Value.token;
+            var token = result.token;
 
             _userRepository.Logout(token);
 
@@ -296,7 +296,7 @@ namespace scout_api.tests
         }
 
         [TestMethod]
-        public void Logout_WithUnknownToken_DoesNotThrow()
+        public async Task Logout_WithUnknownToken_DoesNotThrow()
         {
             // Should not throw for a token that was never added
             _userRepository.Logout("made-up-token");
@@ -305,16 +305,16 @@ namespace scout_api.tests
         }
 
         [TestMethod]
-        public void Logout_OnlyRemovesTargetSession_LeavingOthersIntact()
+        public async Task Logout_OnlyRemovesTargetSession_LeavingOthersIntact()
         {
             var user = MakeUser();
             var result1 = _userRepository.Login(user);
             var result2 = _userRepository.Login(user);
 
-            _userRepository.Logout(result1!.Value.token);
+            _userRepository.Logout(result1.token);
 
             Assert.AreEqual(1, _userRepository.GetSeshCount());
-            Assert.IsTrue(_sessionRepository.Sessions.ContainsKey(result2!.Value.token));
+            Assert.IsTrue(_sessionRepository.Sessions.ContainsKey(result2.token));
         }
     }
 }

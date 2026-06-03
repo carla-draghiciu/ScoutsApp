@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc;
 using scout_api.Models;
 using scout_api.Repositories;
 using scout_api.Services;

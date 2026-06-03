@@ -1,4 +1,4 @@
-﻿using GreenDonut;
+using GreenDonut;
 using Microsoft.EntityFrameworkCore;
 using scout_api.DTOs;
 using scout_api.Enums;
@@ -101,12 +101,12 @@ namespace scout_api.tests
 
 
         [TestMethod]
-        public void GetAll_NoFilters_ReturnsAllEvents()
+        public async Task GetAll_NoFilters_ReturnsAllEvents()
         {
             SeedEvent("Event 1");
             SeedEvent("Event 2");
 
-            var result = _eventService.GetAllWithFilters(_adminUser, StatusFilter.All, "", PriceFilter.All, -1, -1);
+            var result = await _eventService.GetAllWithFiltersAsync(_adminUser, StatusFilter.All, "", PriceFilter.All, -1, -1);
 
             var list = result as List<ScoutEventDTO>;
             Assert.IsNotNull(list);
@@ -114,7 +114,7 @@ namespace scout_api.tests
         }
 
         [TestMethod]
-        public void GetAll_FilterByAttending_ReturnsOnlyAttendedEvents()
+        public async Task GetAll_FilterByAttending_ReturnsOnlyAttendedEvents()
         {
             var e1 = SeedEvent("Attended Event");
             var e2 = SeedEvent("Not Attended Event");
@@ -126,7 +126,7 @@ namespace scout_api.tests
             });
             _context.SaveChanges();
 
-            var result = _eventService.GetAllWithFilters(_normalUser, StatusFilter.Attending, "", PriceFilter.All, -1, -1);
+            var result = await _eventService.GetAllWithFiltersAsync(_normalUser, StatusFilter.Attending, "", PriceFilter.All, -1, -1);
 
             var list = result as List<ScoutEventDTO>;
             Assert.IsNotNull(list);
@@ -135,7 +135,7 @@ namespace scout_api.tests
         }
 
         [TestMethod]
-        public void GetAll_FilterByNotAttending_ReturnsOnlyNonAttendedEvents()
+        public async Task GetAll_FilterByNotAttending_ReturnsOnlyNonAttendedEvents()
         {
             var e1 = SeedEvent("Attended Event");
             SeedEvent("Not Attended Event");
@@ -147,7 +147,7 @@ namespace scout_api.tests
             });
             _context.SaveChanges();
 
-            var result = _eventService.GetAllWithFilters(_normalUser, StatusFilter.NotAttending, "", PriceFilter.All, -1, -1);
+            var result = await _eventService.GetAllWithFiltersAsync(_normalUser, StatusFilter.NotAttending, "", PriceFilter.All, -1, -1);
 
             var list = result as List<ScoutEventDTO>;
             Assert.IsNotNull(list);
@@ -156,7 +156,7 @@ namespace scout_api.tests
         }
 
         [TestMethod]
-        public void GetAll_FilterByLocation_ReturnsMatchingEvents()
+        public async Task GetAll_FilterByLocation_ReturnsMatchingEvents()
         {
             SeedEvent("Cluj Event");
             var e2 = new ScoutEvent
@@ -173,7 +173,7 @@ namespace scout_api.tests
             _context.Events.Add(e2);
             _context.SaveChanges();
 
-            var result = _eventService.GetAllWithFilters(_adminUser, StatusFilter.All, "Brasov", PriceFilter.All, -1, -1);
+            var result = await _eventService.GetAllWithFiltersAsync(_adminUser, StatusFilter.All, "Brasov", PriceFilter.All, -1, -1);
 
             var list = result as List<ScoutEventDTO>;
             Assert.IsNotNull(list);
@@ -182,12 +182,12 @@ namespace scout_api.tests
         }
 
         [TestMethod]
-        public void GetAll_FilterByFreePrice_ReturnsOnlyFreeEvents()
+        public async Task GetAll_FilterByFreePrice_ReturnsOnlyFreeEvents()
         {
             SeedEvent("Free Event", price: 0);
             SeedEvent("Paid Event", price: 50);
 
-            var result = _eventService.GetAllWithFilters(_adminUser, StatusFilter.All, "", PriceFilter.Free, -1, -1);
+            var result = await _eventService.GetAllWithFiltersAsync(_adminUser, StatusFilter.All, "", PriceFilter.Free, -1, -1);
 
             var list = result as List<ScoutEventDTO>;
             Assert.IsNotNull(list);
@@ -196,13 +196,13 @@ namespace scout_api.tests
         }
 
         [TestMethod]
-        public void GetAll_WithPagination_ReturnsPaginatedResult()
+        public async Task GetAll_WithPagination_ReturnsPaginatedResult()
         {
             SeedEvent("Event 1");
             SeedEvent("Event 2");
             SeedEvent("Event 3");
 
-            var result = _eventService.GetAllWithFilters(_adminUser, StatusFilter.All, "", PriceFilter.All, 1, 2);
+            var result = await _eventService.GetAllWithFiltersAsync(_adminUser, StatusFilter.All, "", PriceFilter.All, 1, 2);
 
             Assert.IsNotNull(result);
             var type = result.GetType();
@@ -215,32 +215,32 @@ namespace scout_api.tests
 
 
         [TestMethod]
-        public void GetById_ExistingId_ReturnsEvent()
+        public async Task GetById_ExistingId_ReturnsEvent()
         {
             var seeded = SeedEvent("Find Me");
 
-            var result = _eventService.GetById(seeded.Id);
+            var result = await _eventService.GetByIdAsync(seeded.Id);
 
             Assert.IsNotNull(result);
             Assert.AreEqual("Find Me", result.Name);
         }
 
         [TestMethod]
-        public void GetById_NonExistingId_ReturnsNull()
+        public async Task GetById_NonExistingId_ReturnsNull()
         {
-            var result = _eventService.GetById(9999);
+            var result = await _eventService.GetByIdAsync(9999);
 
             Assert.IsNull(result);
         }
 
 
         [TestMethod]
-        public void GetByOwnerId_ReturnsOnlyOwnerEvents()
+        public async Task GetByOwnerId_ReturnsOnlyOwnerEvents()
         {
             SeedEvent("Admin Event", creatorId: _adminUser.Id);
             SeedEvent("User Event", creatorId: _normalUser.Id);
 
-            var result = _eventService.GetByOwnerId(_adminUser.Id);
+            var result = await _eventService.GetByOwnerIdAsync(_adminUser.Id);
 
             Assert.AreEqual(1, result.Count);
             Assert.AreEqual("Admin Event", result[0].Name);
@@ -248,11 +248,11 @@ namespace scout_api.tests
 
 
         [TestMethod]
-        public void Add_ValidEvent_SavesAndReturnsDto()
+        public async Task Add_ValidEvent_SavesAndReturnsDto()
         {
             var dto = ValidEventDto("Brand New Event");
 
-            var result = _eventService.Add(_adminUser, dto);
+            var result = await _eventService.AddAsync(_adminUser, dto);
 
             Assert.IsNotNull(result);
             Assert.AreEqual("Brand New Event", result.Name);
@@ -261,40 +261,40 @@ namespace scout_api.tests
 
         [TestMethod]
         [ExpectedException(typeof(Exception))]
-        public void Add_InvalidName_ThrowsException()
+        public async Task Add_InvalidName_ThrowsException()
         {
             var dto = ValidEventDto("");
-            _eventService.Add(_adminUser, dto);
+            await _eventService.AddAsync(_adminUser, dto);
         }
 
 
         [TestMethod]
-        public void Remove_ExistingEvent_ReturnsTrueAndDeletes()
+        public async Task Remove_ExistingEvent_ReturnsTrueAndDeletes()
         {
             var seeded = SeedEvent();
 
-            var result = _eventService.Remove(seeded.Id);
+            var result = await _eventService.RemoveAsync(seeded.Id);
 
             Assert.IsTrue(result);
             Assert.AreEqual(0, _context.Events.Count());
         }
 
         [TestMethod]
-        public void Remove_NonExistingEvent_ReturnsFalse()
+        public async Task Remove_NonExistingEvent_ReturnsFalse()
         {
-            var result = _eventService.Remove(9999);
+            var result = await _eventService.RemoveAsync(9999);
 
             Assert.IsFalse(result);
         }
 
 
         [TestMethod]
-        public void Update_ExistingEvent_UpdatesAndReturnsTrue()
+        public async Task Update_ExistingEvent_UpdatesAndReturnsTrue()
         {
             var seeded = SeedEvent("Old Name");
             var dto = ValidEventDto("Updated Name");
 
-            var result = _eventService.Update(seeded.Id, dto);
+            var result = await _eventService.UpdateAsync(seeded.Id, dto);
 
             Assert.IsTrue(result);
             var updated = _context.Events.Find(seeded.Id);
@@ -302,22 +302,22 @@ namespace scout_api.tests
         }
 
         [TestMethod]
-        public void Update_NonExistingEvent_ReturnsFalse()
+        public async Task Update_NonExistingEvent_ReturnsFalse()
         {
             var dto = ValidEventDto();
 
-            var result = _eventService.Update(9999, dto);
+            var result = await _eventService.UpdateAsync(9999, dto);
 
             Assert.IsFalse(result);
         }
 
 
         [TestMethod]
-        public void ToggleAttendance_NotAttending_AddsAttendee()
+        public async Task ToggleAttendance_NotAttending_AddsAttendee()
         {
             var seeded = SeedEvent();
 
-            _eventService.ToggleAttendance(seeded.Id, _normalUser);
+            await _eventService.ToggleAttendanceAsync(seeded.Id, _normalUser);
 
             var attending = _context.EventAttendees
                 .Any(ea => ea.ScoutEventId == seeded.Id && ea.AttendeeId == _normalUser.Id);
@@ -325,7 +325,7 @@ namespace scout_api.tests
         }
 
         [TestMethod]
-        public void ToggleAttendance_AlreadyAttending_RemovesAttendee()
+        public async Task ToggleAttendance_AlreadyAttending_RemovesAttendee()
         {
             var seeded = SeedEvent();
             _context.EventAttendees.Add(new EventAttendee
@@ -335,7 +335,7 @@ namespace scout_api.tests
             });
             _context.SaveChanges();
 
-            _eventService.ToggleAttendance(seeded.Id, _normalUser);
+            await _eventService.ToggleAttendanceAsync(seeded.Id, _normalUser);
 
             var attending = _context.EventAttendees
                 .Any(ea => ea.ScoutEventId == seeded.Id && ea.AttendeeId == _normalUser.Id);
@@ -343,7 +343,7 @@ namespace scout_api.tests
         }
 
         [TestMethod]
-        public void GetUniqueLocations_ReturnsDistinctSortedLocations()
+        public async Task GetUniqueLocations_ReturnsDistinctSortedLocations()
         {
             SeedEvent("E1"); // Location: Bucharest
             SeedEvent("E2"); // Location: Bucharest (duplicate)
@@ -361,7 +361,7 @@ namespace scout_api.tests
             _context.Events.Add(e3);
             _context.SaveChanges();
 
-            var result = _eventService.GetUniqueLocations();
+            var result = await _eventService.GetUniqueLocationsAsync();
 
             Assert.AreEqual(2, result.Count);
             Assert.AreEqual("Alba", result[0]);      // sorted alphabetically

@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using scout_api.DTOs;
 using scout_api.Enums;
 using scout_api.Mappers;
@@ -17,7 +17,7 @@ namespace scout_api.Services
             this.eventRepository = eventRepository;
         }
 
-        public object GetAllWithFilters(
+        public async Task<object> GetAllWithFiltersAsync(
             User currentUser, 
             StatusFilter statusFilter, 
             string locationFilter, 
@@ -25,70 +25,70 @@ namespace scout_api.Services
             int pageNumber, 
             int pageSize)
         {
-            return eventRepository.GetAllWithFilters(currentUser, statusFilter, locationFilter, priceFilter, pageNumber, pageSize);
+            return await eventRepository.GetAllWithFiltersAsync(currentUser, statusFilter, locationFilter, priceFilter, pageNumber, pageSize);
         }
 
-        public ScoutEventDTO? GetById(int eventId)
+        public async Task<ScoutEventDTO?> GetByIdAsync(int eventId)
         {
-            return eventRepository.GetById(eventId)?.ToDto();
+            return (await eventRepository.GetByIdAsync(eventId))?.ToDto();
         }
 
-        public List<ScoutEventDTO> GetByOwnerId(int ownerId)
+        public async Task<List<ScoutEventDTO>> GetByOwnerIdAsync(int ownerId)
         {
-            return eventRepository.GetByOwnerId(ownerId);
+            return await eventRepository.GetByOwnerIdAsync(ownerId);
         }
 
-        public List<string> GetUniqueLocations()
+        public async Task<List<string>> GetUniqueLocationsAsync()
         {
-            return this.eventRepository.GetUniqueLocations();
+            return await eventRepository.GetUniqueLocationsAsync();
         }
 
-        public ScoutEventDTO Add(User currentUser, CreateScoutEventDTO eventToBeAddedDto)
+        public async Task<ScoutEventDTO> AddAsync(User currentUser, CreateScoutEventDTO eventToBeAddedDto)
         {
             var eventToBeAdded = eventToBeAddedDto.FromDTO(currentUser);
             ValidateEvent(eventToBeAdded);
 
-            return eventRepository.Add(currentUser, eventToBeAdded).ToDto();
+            return (await eventRepository.AddAsync(currentUser, eventToBeAdded)).ToDto();
         }
 
-        public bool Update(int eventId, CreateScoutEventDTO newEventInformation)
+        public async Task<bool> UpdateAsync(int eventId, CreateScoutEventDTO newEventInformation)
         {
-            ScoutEvent? eventToUpdate = eventRepository.GetById(eventId);
+            ScoutEvent? eventToUpdate = await eventRepository.GetByIdAsync(eventId);
 
             if (eventToUpdate == null)
             {
                 return false;
             }
 
-            return eventRepository.Update(eventToUpdate, newEventInformation);
+            return await eventRepository.UpdateAsync(eventToUpdate, newEventInformation);
         }
 
-        public bool Remove(int eventId)
+        public async Task<bool> RemoveAsync(int eventId)
         {
-            ScoutEvent? eventToRemove = eventRepository.GetById(eventId);
+            ScoutEvent? eventToRemove = await eventRepository.GetByIdAsync(eventId);
 
             if (eventToRemove == null)
             {
                 return false;
             }
 
-            return eventRepository.Remove(eventToRemove);
+            return await eventRepository.RemoveAsync(eventToRemove);
         }
 
-        public bool ToggleAttendance(int eventId, User? currentUser)
+        public async Task<bool> ToggleAttendanceAsync(int eventId, User? currentUser)
         {
             if (currentUser == null)
             {
                 return false;
             }
 
-            return eventRepository.ToggleAttendance(eventId, currentUser);
+            return await eventRepository.ToggleAttendanceAsync(eventId, currentUser);
         }
 
-        public object Search(string query, int pageNumber, int pageSize)
+        public async Task<object> SearchAsync(string query, int pageNumber, int pageSize)
         {
             query = query.ToLower();
-            return eventRepository.Search(query, pageNumber, pageSize);
+            return await eventRepository.SearchAsync(query, pageNumber, pageSize);
         }
 
         private void ValidateEvent(ScoutEvent eventToValidate)

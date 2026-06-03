@@ -1,4 +1,4 @@
-﻿using scout_api.DTOs;
+using scout_api.DTOs;
 using scout_api.Enums;
 using scout_api.Mappers;
 using scout_api.Models;
@@ -21,14 +21,14 @@ namespace scout_api.Services
             return userRepository.GetAllLoggedIn();
         }
 
-        public List<UserDTO?> GetAll()
+        public async Task<List<UserDTO?>> GetAllAsync()
         {
-            return userRepository.GetAll();
+            return await userRepository.GetAllAsync();
         }
 
-        public UserDTO? GetUserById(int userId)
+        public async Task<UserDTO?> GetUserByIdAsync(int userId)
         {
-            return userRepository.GetUserById(userId);
+            return await userRepository.GetUserByIdAsync(userId);
         }
 
         public User? GetUserByToken(string token)
@@ -36,9 +36,9 @@ namespace scout_api.Services
             return userRepository.GetUserByToken(token);
         }
 
-        public User? Register(RegisterDTO registeringUser)
+        public async Task<User?> RegisterAsync(RegisterDTO registeringUser)
         {
-            User? user = userRepository.FindUserByEmail(registeringUser.Email);
+            User? user = await userRepository.FindUserByEmailAsync(registeringUser.Email);
             if (user != null)
             {
                 return null;
@@ -53,12 +53,12 @@ namespace scout_api.Services
 
             User registered = registeringUser.FromDto(level);
 
-            return userRepository.AddUser(registered);
+            return await userRepository.AddUserAsync(registered);
         }
 
-        public (User user, string token, string role, List<string> permissions)? Login(LoginDTO logingUser)
+        public async Task<(User user, string token, string role, List<string> permissions)?> LoginAsync(LoginDTO logingUser)
         {
-            User? user = userRepository.GetUserByIdentifier(logingUser.Identifier);
+            User? user = await userRepository.GetUserByIdentifierAsync(logingUser.Identifier);
             
             if (user == null)
             {

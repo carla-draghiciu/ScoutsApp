@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using scout_api.DTOs;
 using scout_api.Enums;
 using scout_api.Models;
@@ -74,34 +74,34 @@ namespace scout_api.tests
         public void Cleanup() => _dbContext.Dispose();
 
         [TestMethod]
-        public void GetById_ReturnsNull_WhenEventDoesNotExist()
+        public async Task GetById_ReturnsNull_WhenEventDoesNotExist()
         {
-            var result = _eventRepository.GetById(999);
+            var result = await _eventRepository.GetByIdAsync(999);
 
             Assert.IsNull(result);
         }
 
         [TestMethod]
-        public void GetById_ReturnsEvent_WhenExists()
+        public async Task GetById_ReturnsEvent_WhenExists()
         {
             var creator = MakeUser();
             var ev = MakeEvent(creator);
 
-            var result = _eventRepository.GetById(ev.Id);
+            var result = await _eventRepository.GetByIdAsync(ev.Id);
 
             Assert.IsNotNull(result);
             Assert.AreEqual(ev.Id, result.Id);
         }
 
         [TestMethod]
-        public void GetById_IncludesAttendeesAndCreator()
+        public async Task GetById_IncludesAttendeesAndCreator()
         {
             var creator = MakeUser();
             var attendee = MakeUser("Bob", "bob@example.com", "SC002");
             var ev = MakeEvent(creator);
             AddAttendee(ev, attendee);
 
-            var result = _eventRepository.GetById(ev.Id);
+            var result = await _eventRepository.GetByIdAsync(ev.Id);
 
             Assert.IsNotNull(result!.Creator);
             Assert.AreEqual(1, result.Attendees.Count);
@@ -109,18 +109,18 @@ namespace scout_api.tests
         }
 
         [TestMethod]
-        public void GetByOwnerId_ReturnsEmptyList_WhenOwnerHasNoEvents()
+        public async Task GetByOwnerId_ReturnsEmptyList_WhenOwnerHasNoEvents()
         {
             var creator = MakeUser();
 
-            var result = _eventRepository.GetByOwnerId(creator.Id);
+            var result = await _eventRepository.GetByOwnerIdAsync(creator.Id);
 
             Assert.IsNotNull(result);
             Assert.AreEqual(0, result.Count);
         }
 
         [TestMethod]
-        public void GetByOwnerId_ReturnsOnlyEventsForGivenOwner()
+        public async Task GetByOwnerId_ReturnsOnlyEventsForGivenOwner()
         {
             var alice = MakeUser("Alice", "alice@example.com", "SC001");
             var bob = MakeUser("Bob", "bob@example.com", "SC002");
@@ -129,30 +129,30 @@ namespace scout_api.tests
             MakeEvent(alice, "Alice Event 2");
             MakeEvent(bob, "Bob Event");
 
-            var result = _eventRepository.GetByOwnerId(alice.Id);
+            var result = await _eventRepository.GetByOwnerIdAsync(alice.Id);
 
             Assert.AreEqual(2, result.Count);
             Assert.IsTrue(result.All(e => e.CreatorId == alice.Id));
         }
 
         [TestMethod]
-        public void GetUniqueLocations_ReturnsEmptyList_WhenNoEvents()
+        public async Task GetUniqueLocations_ReturnsEmptyList_WhenNoEvents()
         {
-            var result = _eventRepository.GetUniqueLocations();
+            var result = await _eventRepository.GetUniqueLocationsAsync();
 
             Assert.IsNotNull(result);
             Assert.AreEqual(0, result.Count);
         }
 
         [TestMethod]
-        public void GetUniqueLocations_ReturnsDistinctLocations_Sorted()
+        public async Task GetUniqueLocations_ReturnsDistinctLocations_Sorted()
         {
             var creator = MakeUser();
             MakeEvent(creator, location: "Zoo");
             MakeEvent(creator, location: "Forest");
             MakeEvent(creator, location: "Forest"); // duplicate
 
-            var result = _eventRepository.GetUniqueLocations();
+            var result = await _eventRepository.GetUniqueLocationsAsync();
 
             Assert.AreEqual(2, result.Count);
             Assert.AreEqual("Forest", result[0]);
@@ -160,7 +160,7 @@ namespace scout_api.tests
         }
 
         [TestMethod]
-        public void Add_PersistsEvent_AndReturnsIt()
+        public async Task Add_PersistsEvent_AndReturnsIt()
         {
             var creator = MakeUser();
             var ev = new ScoutEvent
@@ -173,7 +173,7 @@ namespace scout_api.tests
                 Attendees = new List<EventAttendee>()
             };
 
-            var result = _eventRepository.Add(creator, ev);
+            var result = await _eventRepository.AddAsync(creator, ev);
 
             Assert.IsNotNull(result);
             Assert.AreEqual(1, _dbContext.Events.Count());
@@ -181,7 +181,7 @@ namespace scout_api.tests
         }
 
         [TestMethod]
-        public void Update_ModifiesAllFields_AndReturnsTrue()
+        public async Task Update_ModifiesAllFields_AndReturnsTrue()
         {
             var creator = MakeUser();
             var ev = MakeEvent(creator);
@@ -198,7 +198,7 @@ namespace scout_api.tests
                 Equipment = "Boots"
             };
 
-            var result = _eventRepository.Update(ev, newInfo);
+            var result = await _eventRepository.UpdateAsync(ev, newInfo);
 
             Assert.IsTrue(result);
 
@@ -211,46 +211,46 @@ namespace scout_api.tests
         }
 
         [TestMethod]
-        public void Remove_DeletesEvent_FromDatabase_AndReturnsTrue()
+        public async Task Remove_DeletesEvent_FromDatabase_AndReturnsTrue()
         {
             var creator = MakeUser();
             var ev = MakeEvent(creator);
 
-            var result = _eventRepository.Remove(ev);
+            var result = await _eventRepository.RemoveAsync(ev);
 
             Assert.IsTrue(result);
             Assert.AreEqual(0, _dbContext.Events.Count());
         }
 
         [TestMethod]
-        public void ToggleAttendance_AddsAttendee_WhenNotAlreadyAttending()
+        public async Task ToggleAttendance_AddsAttendee_WhenNotAlreadyAttending()
         {
             var creator = MakeUser();
             var attendee = MakeUser("Bob", "bob@example.com", "SC002");
             var ev = MakeEvent(creator);
 
-            var result = _eventRepository.ToggleAttendance(ev.Id, attendee);
+            var result = await _eventRepository.ToggleAttendanceAsync(ev.Id, attendee);
 
             Assert.IsTrue(result);
             Assert.AreEqual(1, _dbContext.EventAttendees.Count(ea => ea.ScoutEventId == ev.Id));
         }
 
         [TestMethod]
-        public void ToggleAttendance_RemovesAttendee_WhenAlreadyAttending()
+        public async Task ToggleAttendance_RemovesAttendee_WhenAlreadyAttending()
         {
             var creator = MakeUser();
             var attendee = MakeUser("Bob", "bob@example.com", "SC002");
             var ev = MakeEvent(creator);
             AddAttendee(ev, attendee);
 
-            var result = _eventRepository.ToggleAttendance(ev.Id, attendee);
+            var result = await _eventRepository.ToggleAttendanceAsync(ev.Id, attendee);
 
             Assert.IsTrue(result);
             Assert.AreEqual(0, _dbContext.EventAttendees.Count(ea => ea.ScoutEventId == ev.Id));
         }
 
         [TestMethod]
-        public void ToggleAttendance_DoesNotAffectOtherAttendees_WhenRemoving()
+        public async Task ToggleAttendance_DoesNotAffectOtherAttendees_WhenRemoving()
         {
             var creator = MakeUser();
             var attendee1 = MakeUser("Bob", "bob@example.com", "SC002");
@@ -259,20 +259,20 @@ namespace scout_api.tests
             AddAttendee(ev, attendee1);
             AddAttendee(ev, attendee2);
 
-            _eventRepository.ToggleAttendance(ev.Id, attendee1);
+            await _eventRepository.ToggleAttendanceAsync(ev.Id, attendee1);
 
             Assert.AreEqual(1, _dbContext.EventAttendees.Count(ea => ea.ScoutEventId == ev.Id));
             Assert.IsTrue(_dbContext.EventAttendees.Any(ea => ea.AttendeeId == attendee2.Id));
         }
 
         [TestMethod]
-        public void GetAllWithFilters_ReturnsAllEvents_WhenNoPaginationAndNoFilters()
+        public async Task GetAllWithFilters_ReturnsAllEvents_WhenNoPaginationAndNoFilters()
         {
             var creator = MakeUser();
             MakeEvent(creator, "Event A");
             MakeEvent(creator, "Event B");
 
-            var result = _eventRepository.GetAllWithFilters(
+            var result = await _eventRepository.GetAllWithFiltersAsync(
                 creator, StatusFilter.All, string.Empty, PriceFilter.All, -1, -1);
 
             var list = result as List<ScoutEventDTO>;
@@ -281,7 +281,7 @@ namespace scout_api.tests
         }
 
         [TestMethod]
-        public void GetAllWithFilters_StatusAttending_ReturnsOnlyAttendedEvents()
+        public async Task GetAllWithFilters_StatusAttending_ReturnsOnlyAttendedEvents()
         {
             var user = MakeUser();
             var creator = MakeUser("Bob", "bob@example.com", "SC002");
@@ -289,7 +289,7 @@ namespace scout_api.tests
             var ev2 = MakeEvent(creator, "Not Attended");
             AddAttendee(ev1, user);
 
-            var result = _eventRepository.GetAllWithFilters(
+            var result = await _eventRepository.GetAllWithFiltersAsync(
                 user, StatusFilter.Attending, string.Empty, PriceFilter.All, -1, -1);
 
             var list = result as List<ScoutEventDTO>;
@@ -299,7 +299,7 @@ namespace scout_api.tests
         }
 
         [TestMethod]
-        public void GetAllWithFilters_StatusNotAttending_ExcludesAttendedEvents()
+        public async Task GetAllWithFilters_StatusNotAttending_ExcludesAttendedEvents()
         {
             var user = MakeUser();
             var creator = MakeUser("Bob", "bob@example.com", "SC002");
@@ -307,7 +307,7 @@ namespace scout_api.tests
             var ev2 = MakeEvent(creator, "Not Attended");
             AddAttendee(ev1, user);
 
-            var result = _eventRepository.GetAllWithFilters(
+            var result = await _eventRepository.GetAllWithFiltersAsync(
                 user, StatusFilter.NotAttending, string.Empty, PriceFilter.All, -1, -1);
 
             var list = result as List<ScoutEventDTO>;
@@ -317,13 +317,13 @@ namespace scout_api.tests
         }
 
         [TestMethod]
-        public void GetAllWithFilters_LocationFilter_ReturnsOnlyMatchingLocation()
+        public async Task GetAllWithFilters_LocationFilter_ReturnsOnlyMatchingLocation()
         {
             var creator = MakeUser();
             MakeEvent(creator, "Forest Event", location: "Forest");
             MakeEvent(creator, "Beach Event", location: "Beach");
 
-            var result = _eventRepository.GetAllWithFilters(
+            var result = await _eventRepository.GetAllWithFiltersAsync(
                 creator, StatusFilter.All, "Forest", PriceFilter.All, -1, -1);
 
             var list = result as List<ScoutEventDTO>;
@@ -333,13 +333,13 @@ namespace scout_api.tests
         }
 
         [TestMethod]
-        public void GetAllWithFilters_EmptyLocationFilter_ReturnsAllEvents()
+        public async Task GetAllWithFilters_EmptyLocationFilter_ReturnsAllEvents()
         {
             var creator = MakeUser();
             MakeEvent(creator, location: "Forest");
             MakeEvent(creator, location: "Beach");
 
-            var result = _eventRepository.GetAllWithFilters(
+            var result = await _eventRepository.GetAllWithFiltersAsync(
                 creator, StatusFilter.All, string.Empty, PriceFilter.All, -1, -1);
 
             var list = result as List<ScoutEventDTO>;
@@ -347,13 +347,13 @@ namespace scout_api.tests
         }
 
         [TestMethod]
-        public void GetAllWithFilters_PriceFree_ReturnsOnlyFreeEvents()
+        public async Task GetAllWithFilters_PriceFree_ReturnsOnlyFreeEvents()
         {
             var creator = MakeUser();
             MakeEvent(creator, "Free Event", price: 0m);
             MakeEvent(creator, "Paid Event", price: 15m);
 
-            var result = _eventRepository.GetAllWithFilters(
+            var result = await _eventRepository.GetAllWithFiltersAsync(
                 creator, StatusFilter.All, string.Empty, PriceFilter.Free, -1, -1);
 
             var list = result as List<ScoutEventDTO>;
@@ -363,13 +363,13 @@ namespace scout_api.tests
         }
 
         [TestMethod]
-        public void GetAllWithFilters_PriceAll_ReturnsFreeAndPaidEvents()
+        public async Task GetAllWithFilters_PriceAll_ReturnsFreeAndPaidEvents()
         {
             var creator = MakeUser();
             MakeEvent(creator, price: 0m);
             MakeEvent(creator, price: 20m);
 
-            var result = _eventRepository.GetAllWithFilters(
+            var result = await _eventRepository.GetAllWithFiltersAsync(
                 creator, StatusFilter.All, string.Empty, PriceFilter.All, -1, -1);
 
             var list = result as List<ScoutEventDTO>;
@@ -377,14 +377,14 @@ namespace scout_api.tests
         }
 
         [TestMethod]
-        public void GetAllWithFilters_CombinedLocationAndPrice_NarrowsResults()
+        public async Task GetAllWithFilters_CombinedLocationAndPrice_NarrowsResults()
         {
             var creator = MakeUser();
             MakeEvent(creator, "Forest Free", location: "Forest", price: 0m);
             MakeEvent(creator, "Forest Paid", location: "Forest", price: 10m);
             MakeEvent(creator, "Beach Free", location: "Beach", price: 0m);
 
-            var result = _eventRepository.GetAllWithFilters(
+            var result = await _eventRepository.GetAllWithFiltersAsync(
                 creator, StatusFilter.All, "Forest", PriceFilter.Free, -1, -1);
 
             var list = result as List<ScoutEventDTO>;

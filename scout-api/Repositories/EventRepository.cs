@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using scout_api.Enums;
 using scout_api.Mappers;
@@ -18,9 +18,9 @@ namespace scout_api.Repositories
             this.databaseContext = databaseContext;
         }
 
-        public object GetAllWithFilters(User currentUser, StatusFilter statusFilter, string locationFilter, PriceFilter priceFilter, int pageNumber, int pageSize)
+        public async Task<object> GetAllWithFiltersAsync(User currentUser, StatusFilter statusFilter, string locationFilter, PriceFilter priceFilter, int pageNumber, int pageSize)
         {
-            var filteredEvents = ApplyFilters(currentUser, statusFilter, locationFilter, priceFilter);
+            var filteredEvents = await ApplyFiltersAsync(currentUser, statusFilter, locationFilter, priceFilter);
 
             if (pageNumber == -1 || pageSize == -1)
             {
@@ -30,43 +30,43 @@ namespace scout_api.Repositories
             return GetPaginated(filteredEvents, pageNumber, pageSize);
         }
 
-        public ScoutEvent? GetById(int eventId)
+        public async Task<ScoutEvent?> GetByIdAsync(int eventId)
         {
-            return databaseContext.Events
+            return await databaseContext.Events
                 .Include(scoutEvent => scoutEvent.Attendees)
                     .ThenInclude(ea => ea.Attendee)
                 .Include(scoutEvent => scoutEvent.Creator)
                 .Include(scoutEvent => scoutEvent.EventBadge)
-                .FirstOrDefault(scoutEvent => scoutEvent.Id == eventId);
+                .FirstOrDefaultAsync(scoutEvent => scoutEvent.Id == eventId);
         }
 
-        public List<ScoutEventDTO> GetByOwnerId(int ownerId)
+        public async Task<List<ScoutEventDTO>> GetByOwnerIdAsync(int ownerId)
         {
-            return databaseContext.Events
+            return await databaseContext.Events
                 .Include(scoutEvent => scoutEvent.Attendees)
                 .Where(scoutEvent => scoutEvent.CreatorId == ownerId)
                 .Select(scoutEvent => scoutEvent.ToDto())
-                .ToList();
+                .ToListAsync();
         }
 
-        public List<string> GetUniqueLocations()
+        public async Task<List<string>> GetUniqueLocationsAsync()
         {
-            return databaseContext.Events
+            return await databaseContext.Events
                 .Select(scoutEvent => scoutEvent.Location)
                 .Distinct()
                 .OrderBy(location => location)
-                .ToList();
+                .ToListAsync();
         }
 
-        public ScoutEvent Add(User currentUser, ScoutEvent eventToBeAdded)
+        public async Task<ScoutEvent> AddAsync(User currentUser, ScoutEvent eventToBeAdded)
         {
             databaseContext.Events.Add(eventToBeAdded);
-            databaseContext.SaveChanges();
+            await databaseContext.SaveChangesAsync();
 
             return eventToBeAdded;
         }
 
-        public bool Update(ScoutEvent eventToUpdate, CreateScoutEventDTO newEventInformation)
+        public async Task<bool> UpdateAsync(ScoutEvent eventToUpdate, CreateScoutEventDTO newEventInformation)
         {
             eventToUpdate.Name = newEventInformation.Name;
             eventToUpdate.Location = newEventInformation.Location;
@@ -77,21 +77,21 @@ namespace scout_api.Repositories
             eventToUpdate.RegistrationDeadline = newEventInformation.RegistrationDeadline;
             eventToUpdate.Equipment = newEventInformation.Equipment;
 
-            databaseContext.SaveChanges();
+            await databaseContext.SaveChangesAsync();
             return true;
         }
 
-        public bool Remove(ScoutEvent eventToRemove)
+        public async Task<bool> RemoveAsync(ScoutEvent eventToRemove)
         {
             databaseContext.Events.Remove(eventToRemove);
-            databaseContext.SaveChanges();
+            await databaseContext.SaveChangesAsync();
             return true;
         }
 
-        public bool ToggleAttendance(int eventId, User currentUser)
+        public async Task<bool> ToggleAttendanceAsync(int eventId, User currentUser)
         {
-            var existing = databaseContext.EventAttendees
-                .FirstOrDefault(ea => ea.ScoutEventId == eventId && ea.AttendeeId == currentUser.Id);
+            var existing = await databaseContext.EventAttendees
+                .FirstOrDefaultAsync(ea => ea.ScoutEventId == eventId && ea.AttendeeId == currentUser.Id);
 
             if (existing != null)
             {
@@ -106,13 +106,13 @@ namespace scout_api.Repositories
                 });
             }
 
-            databaseContext.SaveChanges();
+            await databaseContext.SaveChangesAsync();
             return true;
         }
 
-        public object Search(string query, int pageNumber, int pageSize)
+        public async Task<object> SearchAsync(string query, int pageNumber, int pageSize)
         {
-            var filtered = databaseContext.Events
+            var filtered = await databaseContext.Events
                 .Include(scoutEvent => scoutEvent.Attendees)
                     .ThenInclude(scoutEvent => scoutEvent.Attendee)
                 .Include(scoutEvent => scoutEvent.Creator)
@@ -120,12 +120,12 @@ namespace scout_api.Repositories
                     scoutEvent.Name.ToLower().Contains(query)
                 )
                 .Select(scoutEvent => scoutEvent.ToDto())
-                .ToList();
+                .ToListAsync();
 
             return GetPaginated(filtered, pageNumber, pageSize);
         }
 
-        private List<ScoutEventDTO> ApplyFilters(User currentUser, StatusFilter statusFilter, string locationFilter, PriceFilter priceFilter)
+        private async Task<List<ScoutEventDTO>> ApplyFiltersAsync(User currentUser, StatusFilter statusFilter, string locationFilter, PriceFilter priceFilter)
         {
             IQueryable<ScoutEvent> query = databaseContext.Events
                 .Include(e => e.Attendees)
@@ -145,12 +145,12 @@ namespace scout_api.Repositories
             if (priceFilter == PriceFilter.Free)
                 query = query.Where(scoutEvent => scoutEvent.Price == 0);
 
-            return query.AsNoTracking()
+            return await query.AsNoTracking()
                 .Include(scoutEvent => scoutEvent.Attendees)
                     .ThenInclude(scoutEvent => scoutEvent.Attendee)
                 .Include(scoutEvent => scoutEvent.Creator)
                 .Select(scoutEvent => scoutEvent.ToDto())
-                .ToList();
+                .ToListAsync();
         }
 
         private object GetPaginated(List<ScoutEventDTO> filteredEvents, int pageNumber, int pageSize)

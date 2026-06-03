@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using scout_api.Enums;
 using scout_api.DTOs;
@@ -19,7 +19,7 @@ namespace scout_api.Controllers
         }
 
         [HttpGet]
-        public IActionResult GetAll(string statusFilter = "AllEvents", string locationFilter = "", string priceFilter = "AllPrices", int pageNumber = 1, int pageSize = 6)
+        public async Task<IActionResult> GetAll(string statusFilter = "AllEvents", string locationFilter = "", string priceFilter = "AllPrices", int pageNumber = 1, int pageSize = 6)
         {
             var response = CheckPermission("view_events");
 
@@ -38,14 +38,13 @@ namespace scout_api.Controllers
                 return NoContent();
             }
 
-            // 200 response
             var currentUser = GetCurrentUser()!;
-            return Ok(eventService.GetAllWithFilters(currentUser, status, locationFilter, price, pageNumber, pageSize));
+            return Ok(await eventService.GetAllWithFiltersAsync(currentUser, status, locationFilter, price, pageNumber, pageSize));
         }
 
         [HttpGet("{eventId}")]
         [ActionName("GetById")]
-        public IActionResult GetById(int eventId)
+        public async Task<IActionResult> GetById(int eventId)
         {
             var response = CheckPermission("view_events");
 
@@ -54,19 +53,18 @@ namespace scout_api.Controllers
                 return response;
             }
 
-            var foundEvent = eventService.GetById(eventId);
+            var foundEvent = await eventService.GetByIdAsync(eventId);
 
             if (foundEvent == null)
             {
                 return NotFound();
             }
 
-            // 200 response
             return Ok(foundEvent);
         }
 
         [HttpGet("byUser/{userId}")]
-        public IActionResult GetByUserId(int userId)
+        public async Task<IActionResult> GetByUserId(int userId)
         {
             var response = CheckPermission("view_events");
 
@@ -75,13 +73,13 @@ namespace scout_api.Controllers
                 return response;
             }
 
-            List<ScoutEventDTO> foundEvents = eventService.GetByOwnerId(userId);
+            var foundEvents = await eventService.GetByOwnerIdAsync(userId);
 
             return Ok(foundEvents);
         }
 
         [HttpPost]
-        public IActionResult Create(CreateScoutEventDTO eventToBeCreated)
+        public async Task<IActionResult> Create(CreateScoutEventDTO eventToBeCreated)
         {
             var response = CheckPermission("create_event");
 
@@ -91,17 +89,16 @@ namespace scout_api.Controllers
             }
 
             var currentUser = GetCurrentUser()!;
-            var createdEvent = eventService.Add(currentUser, eventToBeCreated);
-            // 201 response
+            var createdEvent = await eventService.AddAsync(currentUser, eventToBeCreated);
             return CreatedAtAction(
-                nameof(GetById),                    // 1. which action can fetch the new resource
-                new { eventId = createdEvent.Id },  // 2. the route parameter for that action
-                createdEvent                        // 3. the body of the response (the new event as JSON)
+                nameof(GetById),
+                new { eventId = createdEvent.Id },
+                createdEvent
             );
         }
 
         [HttpPut("{idOfEventToUpdate}")]
-        public IActionResult Update(int idOfEventToUpdate, CreateScoutEventDTO newEvent)
+        public async Task<IActionResult> Update(int idOfEventToUpdate, CreateScoutEventDTO newEvent)
         {
             var response = CheckPermission("update_event");
 
@@ -110,11 +107,11 @@ namespace scout_api.Controllers
                 return response;
             }
 
-            return eventService.Update(idOfEventToUpdate, newEvent) ? NoContent() : NotFound();
+            return await eventService.UpdateAsync(idOfEventToUpdate, newEvent) ? NoContent() : NotFound();
         }
 
         [HttpDelete("{idOfEventToDelete}")]
-        public IActionResult Delete(int idOfEventToDelete)
+        public async Task<IActionResult> Delete(int idOfEventToDelete)
         {
             var response = CheckPermission("delete_event");
 
@@ -123,17 +120,17 @@ namespace scout_api.Controllers
                 return response;
             }
 
-            return eventService.Remove(idOfEventToDelete) ? NoContent() : NotFound();
+            return await eventService.RemoveAsync(idOfEventToDelete) ? NoContent() : NotFound();
         }
 
         [HttpGet("locations")]
-        public IActionResult GetLocations()
+        public async Task<IActionResult> GetLocations()
         {
-            return Ok(eventService.GetUniqueLocations());
+            return Ok(await eventService.GetUniqueLocationsAsync());
         }
 
         [HttpPut("attendance/{eventId}")]
-        public IActionResult ToggleAttendance(int eventId)
+        public async Task<IActionResult> ToggleAttendance(int eventId)
         {
             var response = CheckPermission("join_event");
 
@@ -143,16 +140,16 @@ namespace scout_api.Controllers
             }
 
             var currentUser = GetCurrentUser()!;
-            return eventService.ToggleAttendance(eventId, currentUser) ? NoContent() : NotFound();
+            return await eventService.ToggleAttendanceAsync(eventId, currentUser) ? NoContent() : NotFound();
         }
 
         [HttpGet("search")]
-        public IActionResult Search([FromQuery] string query, [FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 6)
+        public async Task<IActionResult> Search([FromQuery] string query, [FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 6)
         {
             var check = CheckPermission("view_events");
             if (check != null) return check;
 
-            var results = eventService.Search(query, pageNumber, pageSize);
+            var results = await eventService.SearchAsync(query, pageNumber, pageSize);
             return Ok(results);
         }
     }

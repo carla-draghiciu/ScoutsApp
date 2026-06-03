@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using scout_api.DTOs;
 using scout_api.Repositories;
@@ -18,9 +18,9 @@ namespace scout_api.Controllers
         }
 
         [HttpGet]
-        public IActionResult GetAll()
+        public async Task<IActionResult> GetAll()
         {
-            return Ok(userService.GetAll());
+            return Ok(await userService.GetAllAsync());
         }
 
         [HttpGet("/current")]
@@ -30,9 +30,9 @@ namespace scout_api.Controllers
         }
 
         [HttpGet("{userId}")]
-        public IActionResult GetById(int userId)
+        public async Task<IActionResult> GetById(int userId)
         {
-            var foundUser = userService.GetUserById(userId);
+            var foundUser = await userService.GetUserByIdAsync(userId);
 
             if (foundUser == null)
             {
@@ -43,11 +43,11 @@ namespace scout_api.Controllers
         }
 
         [HttpPost("register")]
-        public IActionResult Register(RegisterDTO registeringUser)
+        public async Task<IActionResult> Register(RegisterDTO registeringUser)
         {
             try
             {
-                var user = userService.Register(registeringUser);
+                var user = await userService.RegisterAsync(registeringUser);
                 if (user == null)
                 {
                     return Conflict("An account already exists with this email");
@@ -67,9 +67,9 @@ namespace scout_api.Controllers
         }
 
         [HttpPost("login")]
-        public IActionResult Login(LoginDTO logingUser)
+        public async Task<IActionResult> Login(LoginDTO logingUser)
         {
-            var loggedIn = userService.Login(logingUser);
+            var loggedIn = await userService.LoginAsync(logingUser);
             if (loggedIn == null)
             {
                 return Unauthorized("Incorrect email or password");
