@@ -147,7 +147,8 @@
             style="display: flex; align-items: center; gap: 10px; cursor: pointer; color: #725C3A; font-weight: bold;">
             <input type="checkbox" [checked]="isAttending()" (change)="toggleAttendance()"
               style="width: 18px; height: 18px;" />
-            Attend this event
+            <span *ngIf="!isLoadingAttendance">Attend this event</span>
+            <span *ngIf="isLoadingAttendance">Loading...</span>
           </label>
 
           @if (isAttending()) {

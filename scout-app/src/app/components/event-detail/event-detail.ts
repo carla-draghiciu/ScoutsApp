@@ -26,6 +26,7 @@ export class EventDetail implements OnInit {
 
   isAdmin: boolean = false;
   isLoading: boolean = false;
+  isLoadingAttendance: boolean = false;
 
   constructor(
     private route: ActivatedRoute, 
@@ -70,17 +71,22 @@ export class EventDetail implements OnInit {
       return;
     }
 
+    this.isLoadingAttendance = true;
     if (this.event) {
       this.service.toggleAttendance(this.event.id).subscribe({
         
         next: () => {
           // refresh
           this.service.getById(this.event!.id).subscribe(updatedEvent => {
+            this.isLoadingAttendance = false;
             this.event = updatedEvent;
             this.cdr.detectChanges();
           });
         },
-        error: err => console.error('Failed to toggle attendance:', err)
+        error: (err) => {
+          console.error('Failed to toggle attendance:', err);
+          this.isLoadingAttendance = false;
+        }
       });
     }
   }
