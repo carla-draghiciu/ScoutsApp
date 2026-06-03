@@ -25,6 +25,7 @@ export class EventDetail implements OnInit {
   canJoinEvent: boolean = false;
 
   isAdmin: boolean = false;
+  isLoading: boolean = false;
 
   constructor(
     private route: ActivatedRoute, 
@@ -36,6 +37,7 @@ export class EventDetail implements OnInit {
   ) { }
 
   ngOnInit() {
+    this.isLoading = true;
     const idParam = this.route.snapshot.paramMap.get('id');
     const id = idParam ? Number(idParam) : NaN;
 
@@ -43,6 +45,7 @@ export class EventDetail implements OnInit {
     this.isAdmin = this.permissionService.isAdmin();
 
     this.service.getById(id).subscribe(event => {
+      this.isLoading = false;
       this.event = event;
       this.cdr.detectChanges();
       if (this.event) {
