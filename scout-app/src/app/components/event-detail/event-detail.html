@@ -25,7 +25,7 @@
 
 <div *ngIf="isLoading" class="loading-events">Loading details...</div>
 
-<main class="main-container">
+<main *ngIf="!isLoading" class="main-container">
 
   <p routerLink="/events" class="navigate-back">< Back</p>
 

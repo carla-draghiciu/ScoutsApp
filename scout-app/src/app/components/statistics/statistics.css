@@ -221,10 +221,14 @@ canvas {
   width: 10%;
   height: 10%;
   margin: auto;
+  margin-top: 90px;
 }
 
 
 @media (max-width: 768px) {
+  .loading-events {
+    margin-top: 0px;
+  }
 
   .header {
     padding: 0 16px;
